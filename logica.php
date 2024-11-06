@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 
 /**
  * Crea la conexión con las base de datos
@@ -33,21 +33,18 @@ function crearAsignatura($nombre){
         $sql->bindParam(":nombre", $nombre);
         $sql->execute();
 
-        return true;
 
     }catch(PDOException $e){
         var_dump("Create ERROR: " . $e->getMessage());
         die();
     }
-
-    $conn = null;
 }
 
 
 /**
  * Muesta las asignaturas disponibles en un menú desplegable 
  */
-function pintaAsig(){
+function getAsignaturas(){
     global $conn;
 
     try {
@@ -56,16 +53,32 @@ function pintaAsig(){
 
         $datos = $sql->fetchAll();
 
-        foreach($datos as $x){
-            echo "<option>".$x[0]."</option>";
-        }
+        $_SESSION["asignaturas"] = $datos;
 
     } catch (PDOException $th) {
         var_dump("Read ERROR: " . $th->getMessage());
         die();
     }
+}
 
-    $conn = null;
+
+/**
+ * TABLA RELACIONAL ENTRE ALUMNO Y ASIGNATURA
+ */
+function crearCurso($dni, $asignatura){
+    global $conn;
+
+    try {
+        $sql = $conn->prepare("INSERT INTO cursa VALUES (:dni, :asignatura)");
+        $sql->bindParam(":dni", $dni);
+        $sql->bindParam(":asignatura", $asignatura);
+        $sql->execute();
+
+
+    } catch (PDOException $th) {
+        var_dump("Create ERROR: " . $th->getMessage());
+        die();
+    }
 }
 
 
@@ -82,45 +95,33 @@ function crearAlumno($dni, $nombre, $apellidos, $asignatura){
         $sql->bindParam(":apellidos", $apellidos);
         $sql->execute();
 
-        return true;
+        crearCurso($dni, $asignatura);
 
     } catch (PDOException $th) {
         var_dump("Create ERROR: " . $th->getMessage());
         die();
     }
 
-    crearCurso($dni, $asignatura);
-}
-
-
-/**
- * TABLA RELACIONAL ENTRE ALUMNO Y ASIGNATURA
- */
-function crearCurso($dni, $asignatura){
-    global $conn;
-
-    try {
-        $sql = $conn->prepare("INSERT INTO cursa VALUES (:dni, :asignatura)");
-        $sql->bindParam(":dni", $dni);
-        $sql->bindParam(":asignatura", $asignatura);
-        $sql->execute();
-
-        return true;
-
-    } catch (PDOException $th) {
-        var_dump("Create ERROR: " . $th->getMessage());
-        die();
-    }
-
-    $conn = null;
 }
 
 
 /**
  * CREA UNIDADES
  */
-function crearUnidad($unidad, $asignaturas){
+function crearUnidad($unidad, $asignatura){
+    global $conn;
 
+    try {
+        $sql = $conn->prepare("INSERT INTO unidad VALUES (:unidad, :asignatura)");
+        $sql->bindParam(":unidad", $unidad);
+        $sql->bindParam(":asignatura", $asignatura);
+        $sql->execute();
+
+
+    } catch (PDOException $th) {
+        var_dump("Create ERROR: " . $th->getMessage());
+        die();
+    }
 }
 
 
@@ -128,39 +129,67 @@ function crearUnidad($unidad, $asignaturas){
  * CREA ACTIVIDADES
  */
 function crearActividad($actividad, $unidad){
+    global $conn;
+
+    try {
+        $sql = $conn->prepare("INSERT INTO actividad VALUES (:actividad, :unidad)");
+        $sql->bindParam(":actividad", $actividad);
+        $sql->bindParam(":unidad", $unidad);
+        $sql->execute();
+
+
+    } catch (PDOException $th) {
+        var_dump("Create ERROR: " . $th->getMessage());
+        die();
+    }
+}
+
+
+/**
+ * CREA CALIFICACIÓN
+ */
+function crearCalificacion(){
 
 }
+
 
 
 /**
  * Gestiona los datos que se reciben desde post y determina que acción tomar
  */
 function inicio(){
+    global $conn;
+    getAsignaturas(); 
+
     if (isset($_POST["enviar"])) {
         $opcion = $_POST["enviar"];
 
         switch ($opcion) {
+
+            // Gestiona creación de asignaturas
             case 'input-asig':
-                if (isset($_POST["asignatura"])) {
+                if (isset($_POST["asignatura"]) && $_POST["asignatura"]!="") {
                     crearAsignatura($_POST["asignatura"]);
                 }
                 break;
+
+            // Gestiona creación de alumnos
             case 'input-alumn':
                 $dni = "";
                 $nombre = "";
                 $apell = "";
                 $asig = "";
 
-                if (isset($_POST["dni-alumn"])) {
+                if (isset($_POST["dni-alumn"]) && $_POST["dni-alumn"]!="") {
                     $dni = $_POST["dni-alumn"];
 
-                    if (isset($_POST["nombre-alumn"])) {
+                    if (isset($_POST["nombre-alumn"]) && $_POST["nombre-alumn"]!="") {
                         $nombre = $_POST["nombre-alumn"];
 
-                        if (isset($_POST["apell-alumn"])) {
+                        if (isset($_POST["apell-alumn"]) && $_POST["apell-alumn"]!="") {
                             $apell = $_POST["apell-alumn"];
 
-                            if (isset($_POST["asig-alumn"])) { // REVISAR
+                            if (isset($_POST["asig-alumn"]) && $_POST["asig-alumn"]!="") { // REVISAR
                                 $asig = $_POST["asig-alumn"];
                                 
                                 crearAlumno($dni, $nombre, $apell, $asig);
@@ -168,9 +197,41 @@ function inicio(){
                         }
                     }
                 }
+                break;
+
+            // Gestiona creación de unidades
+            case 'input-uni':
+                if (isset($_POST["unidad"]) && $_POST["unidad"]!="") {
+                    $unidad = $_POST["unidad"];
+
+                    if (isset($_POST["asig-uni"]) && $_POST["asig-uni"]!="") {
+                        $asig = $_POST["asig-uni"];
+
+                        crearActividad($unidad, $asig);
+                    }
+                }
+                break;
+
+            // Gestiona creación de actividades
+            case 'input-act':
+                if (isset($_POST["actividad"]) && $_POST["actividad"]!="") {
+                    $act = $_POST["actividad"];
+
+                    if (isset($_POST["unidad-act"]) && $_POST["unidad-act"]!="") {
+                        $uni = $_POST["unidad-act"];
+
+                        crearActividad($act, $uni);
+                    }
+                }
+                break;
+
+            // Gestiona creación de calificaciones
+            case 'input-cal':
 
                 break;
         }
+
+        $conn = null;
     }
 }
 
