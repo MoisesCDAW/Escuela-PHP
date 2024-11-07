@@ -25,12 +25,12 @@ $conn = conectar();
 /**
  * CREA ASIGNATURAS
  */
-function crearAsignatura($nombre){
+function crearAsignatura($asignatura){
     global $conn;
 
     try {
-        $sql = $conn->prepare("INSERT INTO asignatura VALUES (:nombre)");
-        $sql->bindParam(":nombre", $nombre);
+        $sql = $conn->prepare("INSERT INTO asignatura (asignatura) VALUES (:asignatura)");
+        $sql->bindParam(":asignatura", $asignatura);
         $sql->execute();
 
 
@@ -51,9 +51,9 @@ function getAsignaturas(){
         $sql = $conn->prepare("SELECT asignatura FROM asignatura");
         $sql->execute();
 
-        $datos = $sql->fetchAll();
-
-        $_SESSION["asignaturas"] = $datos;
+        $datos = $sql->fetchAll(PDO::FETCH_COLUMN);
+        
+        return $datos;
 
     } catch (PDOException $th) {
         var_dump("Read ERROR: " . $th->getMessage());
@@ -148,8 +148,20 @@ function crearActividad($actividad, $unidad){
 /**
  * CREA CALIFICACIÓN
  */
-function crearCalificacion(){
+function crearCalificacion($dni, $actividad, $nota){
+    global $conn;
 
+    try {
+        $sql = $conn->prepare("INSERT INTO calificaciones VALUES (:dni, :actividad, :nota)");
+        $sql->bindParam(":dni", $dni);
+        $sql->bindParam(":actividad", $actividad);
+        $sql->bindParam(":nota", $nota);
+        $sql->execute();
+
+    } catch (PDOException $th) {
+        var_dump("Create ERROR: " . $th->getMessage());
+        die();
+    }
 }
 
 
@@ -159,7 +171,6 @@ function crearCalificacion(){
  */
 function inicio(){
     global $conn;
-    getAsignaturas(); 
 
     if (isset($_POST["enviar"])) {
         $opcion = $_POST["enviar"];
@@ -168,8 +179,11 @@ function inicio(){
 
             // Gestiona creación de asignaturas
             case 'input-asig':
-                if (isset($_POST["asignatura"]) && $_POST["asignatura"]!="") {
+                if ($_POST["asignatura"]!="") {
                     crearAsignatura($_POST["asignatura"]);
+
+                    header("location: asignaturas.php");
+                    die();
                 }
                 break;
 
@@ -178,9 +192,9 @@ function inicio(){
                 $dni = "";
                 $nombre = "";
                 $apell = "";
-                $asig = "";
+                $asig = [];
 
-                if (isset($_POST["dni-alumn"]) && $_POST["dni-alumn"]!="") {
+                if ($_POST["dni-alumn"]!="") {
                     $dni = $_POST["dni-alumn"];
 
                     if (isset($_POST["nombre-alumn"]) && $_POST["nombre-alumn"]!="") {
@@ -192,7 +206,9 @@ function inicio(){
                             if (isset($_POST["asig-alumn"]) && $_POST["asig-alumn"]!="") { // REVISAR
                                 $asig = $_POST["asig-alumn"];
                                 
-                                crearAlumno($dni, $nombre, $apell, $asig);
+                                foreach ($asig as $value) {
+                                    crearAlumno($dni, $nombre, $apell, $value);
+                                }
                             } 
                         }
                     }
@@ -201,20 +217,20 @@ function inicio(){
 
             // Gestiona creación de unidades
             case 'input-uni':
-                if (isset($_POST["unidad"]) && $_POST["unidad"]!="") {
+                if ($_POST["unidad"]!="") {
                     $unidad = $_POST["unidad"];
 
                     if (isset($_POST["asig-uni"]) && $_POST["asig-uni"]!="") {
                         $asig = $_POST["asig-uni"];
 
-                        crearActividad($unidad, $asig);
+                        crearUnidad($unidad, $asig);
                     }
                 }
                 break;
 
             // Gestiona creación de actividades
             case 'input-act':
-                if (isset($_POST["actividad"]) && $_POST["actividad"]!="") {
+                if ($_POST["actividad"]!="") {
                     $act = $_POST["actividad"];
 
                     if (isset($_POST["unidad-act"]) && $_POST["unidad-act"]!="") {
@@ -227,7 +243,19 @@ function inicio(){
 
             // Gestiona creación de calificaciones
             case 'input-cal':
+                if ($_POST["dni-cal"]!="") {
+                    $dni = $_POST["dni-cal"];
 
+                    if ($_POST["act-cal"]!="") {
+                        $act = $_POST["act-cal"];
+
+                        if ($_POST["nota"]!="") {
+                            $nota = $_POST["nota"];
+
+                            crearCalificacion($dni, $act, $nota);
+                        }
+                    }
+                }
                 break;
         }
 
