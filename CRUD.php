@@ -23,14 +23,28 @@ $conn = conectar();
 
 
 /**
- * CREA ASIGNATURAS
+ * CREA REGISTROS
  */
-function crearAsignatura($asignatura){
+function crear($tabla, $columnas, $valores){
     global $conn;
+    $colsAux = [];
+
+    foreach ($columnas as $value) {
+        array_push($colsAux, ":".$value);
+    }
+
+    $strCols = implode(",",$colsAux);
+    $columnas = implode(",",$columnas);
+
+    $sql = "INSERT INTO $tabla ($columnas) VALUES ($strCols)";
 
     try {
-        $sql = $conn->prepare("INSERT INTO asignatura (asignatura) VALUES (:asignatura)");
-        $sql->bindParam(":asignatura", $asignatura);
+        $sql = $conn->prepare($sql);
+
+        for ($i=0; $i < count($valores); $i++) { 
+            $sql->bindParam($colsAux[$i], $valores[$i]);
+        }
+        
         $sql->execute();
 
 
@@ -42,17 +56,27 @@ function crearAsignatura($asignatura){
 
 
 /**
- * Muesta las asignaturas disponibles en un menú desplegable 
+ * DEVUELVE REGISTROS. Permite filtrar por ID 
  */
-function getAsignaturas(){
-    global $conn;
+function leer($columnas, $tabla, $filtro=null){
+    global $conn; 
+
+    $columnas = implode(",",$columnas); 
 
     try {
-        $sql = $conn->prepare("SELECT asignatura FROM asignatura");
-        $sql->execute();
+        if($filtro==null){
+            $sql = "SELECT $columnas FROM $tabla";
+            $sql = $conn->prepare($sql);
+            $sql->execute();
+            $datos = $sql->fetchAll(PDO::FETCH_ASSOC);
+        }else {
+            $sql = "SELECT $columnas FROM $tabla WHERE ID = :filtro";
+            $sql = $conn->prepare($sql);
+            $sql->bindParam(":filtro", $filtro);
+            $sql->execute();
+            $datos = $sql->fetch(PDO::FETCH_ASSOC);
+        }
 
-        $datos = $sql->fetchAll(PDO::FETCH_COLUMN);
-        
         return $datos;
 
     } catch (PDOException $th) {
@@ -63,204 +87,52 @@ function getAsignaturas(){
 
 
 /**
- * TABLA RELACIONAL ENTRE ALUMNO Y ASIGNATURA
+ * ACTUALIZA UN REGISTRO
  */
-function crearCurso($dni, $asignatura){
+function actualizar($tabla, $columnas, $valores, $ID){
     global $conn;
+    $colsAux = [];
 
-    try {
-        $sql = $conn->prepare("INSERT INTO cursa VALUES (:dni, :asignatura)");
-        $sql->bindParam(":dni", $dni);
-        $sql->bindParam(":asignatura", $asignatura);
-        $sql->execute();
-
-
-    } catch (PDOException $th) {
-        var_dump("Create ERROR: " . $th->getMessage());
-        die();
-    }
-}
-
-
-/**
- * CREA ALUMNOS
- */
-function crearAlumno($dni, $nombre, $apellidos, $asignatura){
-    global $conn;
-
-    try {
-        $sql = $conn->prepare("INSERT INTO alumno VALUES (:dni, :nombre, :apellidos)");
-        $sql->bindParam(":dni", $dni);
-        $sql->bindParam(":nombre", $nombre);
-        $sql->bindParam(":apellidos", $apellidos);
-        $sql->execute();
-
-        crearCurso($dni, $asignatura);
-
-    } catch (PDOException $th) {
-        var_dump("Create ERROR: " . $th->getMessage());
-        die();
+    for ($i=0; $i < count($columnas); $i++) { 
+        array_push($colsAux, $columnas[$i] . "=" . ":" . $columnas[$i]);
     }
 
-}
-
-
-/**
- * CREA UNIDADES
- */
-function crearUnidad($unidad, $asignatura){
-    global $conn;
+    $strColum = implode(",", $colsAux);
 
     try {
-        $sql = $conn->prepare("INSERT INTO unidad VALUES (:unidad, :asignatura)");
-        $sql->bindParam(":unidad", $unidad);
-        $sql->bindParam(":asignatura", $asignatura);
-        $sql->execute();
+        $sql = "UPDATE $tabla SET $strColum WHERE ID = :ID";
+        $sql = $conn->prepare($sql);
 
-
-    } catch (PDOException $th) {
-        var_dump("Create ERROR: " . $th->getMessage());
-        die();
-    }
-}
-
-
-/**
- * CREA ACTIVIDADES
- */
-function crearActividad($actividad, $unidad){
-    global $conn;
-
-    try {
-        $sql = $conn->prepare("INSERT INTO actividad VALUES (:actividad, :unidad)");
-        $sql->bindParam(":actividad", $actividad);
-        $sql->bindParam(":unidad", $unidad);
-        $sql->execute();
-
-
-    } catch (PDOException $th) {
-        var_dump("Create ERROR: " . $th->getMessage());
-        die();
-    }
-}
-
-
-/**
- * CREA CALIFICACIÓN
- */
-function crearCalificacion($dni, $actividad, $nota){
-    global $conn;
-
-    try {
-        $sql = $conn->prepare("INSERT INTO calificaciones VALUES (:dni, :actividad, :nota)");
-        $sql->bindParam(":dni", $dni);
-        $sql->bindParam(":actividad", $actividad);
-        $sql->bindParam(":nota", $nota);
-        $sql->execute();
-
-    } catch (PDOException $th) {
-        var_dump("Create ERROR: " . $th->getMessage());
-        die();
-    }
-}
-
-
-
-/**
- * Gestiona los datos que se reciben desde post y determina que acción tomar
- */
-function inicio(){
-    global $conn;
-
-    if (isset($_POST["enviar"])) {
-        $opcion = $_POST["enviar"];
-
-        switch ($opcion) {
-
-            // Gestiona creación de asignaturas
-            case 'input-asig':
-                if ($_POST["asignatura"]!="") {
-                    crearAsignatura($_POST["asignatura"]);
-
-                    header("location: asignaturas.php");
-                    die();
-                }
-                break;
-
-            // Gestiona creación de alumnos
-            case 'input-alumn':
-                $dni = "";
-                $nombre = "";
-                $apell = "";
-                $asig = [];
-
-                if ($_POST["dni-alumn"]!="") {
-                    $dni = $_POST["dni-alumn"];
-
-                    if (isset($_POST["nombre-alumn"]) && $_POST["nombre-alumn"]!="") {
-                        $nombre = $_POST["nombre-alumn"];
-
-                        if (isset($_POST["apell-alumn"]) && $_POST["apell-alumn"]!="") {
-                            $apell = $_POST["apell-alumn"];
-
-                            if (isset($_POST["asig-alumn"]) && $_POST["asig-alumn"]!="") { // REVISAR
-                                $asig = $_POST["asig-alumn"];
-                                
-                                foreach ($asig as $value) {
-                                    crearAlumno($dni, $nombre, $apell, $value);
-                                }
-                            } 
-                        }
-                    }
-                }
-                break;
-
-            // Gestiona creación de unidades
-            case 'input-uni':
-                if ($_POST["unidad"]!="") {
-                    $unidad = $_POST["unidad"];
-
-                    if (isset($_POST["asig-uni"]) && $_POST["asig-uni"]!="") {
-                        $asig = $_POST["asig-uni"];
-
-                        crearUnidad($unidad, $asig);
-                    }
-                }
-                break;
-
-            // Gestiona creación de actividades
-            case 'input-act':
-                if ($_POST["actividad"]!="") {
-                    $act = $_POST["actividad"];
-
-                    if (isset($_POST["unidad-act"]) && $_POST["unidad-act"]!="") {
-                        $uni = $_POST["unidad-act"];
-
-                        crearActividad($act, $uni);
-                    }
-                }
-                break;
-
-            // Gestiona creación de calificaciones
-            case 'input-cal':
-                if ($_POST["dni-cal"]!="") {
-                    $dni = $_POST["dni-cal"];
-
-                    if ($_POST["act-cal"]!="") {
-                        $act = $_POST["act-cal"];
-
-                        if ($_POST["nota"]!="") {
-                            $nota = $_POST["nota"];
-
-                            crearCalificacion($dni, $act, $nota);
-                        }
-                    }
-                }
-                break;
+        for ($i=0; $i < count($valores); $i++) {
+            $sql->bindParam(":".$columnas[$i], $valores[$i]);
         }
 
-        $conn = null;
+        $sql->bindParam(":ID", $ID);
+
+        $sql->execute();
+
+    } catch (PDOException $th) {
+        var_dump("Read ERROR: " . $th->getMessage());
+        die();
     }
 }
 
-inicio();
+
+/**
+ *  ELIMIMA UN REGISTRO
+ */
+function borrar($tabla, $ID){
+    global $conn; 
+
+    try {
+        $sql = "DELETE FROM $tabla WHERE ID = :ID";
+        $sql = $conn->prepare($sql);
+        $sql->bindParam(":ID", $ID);
+        $sql->execute();
+
+
+    } catch (PDOException $th) {
+        var_dump("Read ERROR: " . $th->getMessage());
+        die();
+    }
+}

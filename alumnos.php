@@ -20,8 +20,13 @@
         <p>Selecciona las asignaturas a la que pertenecerá:</p>
         <?php 
             $datos = getAsignaturas();
-            for ($i=0; $i < count($datos); $i++) { 
-                echo "<input type='checkbox' name='asig-alumn[]' value='".$datos[$i]."'> ".$datos[$i];
+
+            if ($datos==[]) {
+                echo "Todavía no hay asignaturas creadas";
+            }else{
+                for ($i=0; $i < count($datos); $i++) { 
+                    echo "<input type='checkbox' name='asig-alumn[]' value='".$datos[$i]."'> ".$datos[$i];
+                }
             }
         ?>
         <br>
@@ -29,9 +34,11 @@
         <button name="enviar" value="input-alumn">Enviar</button>
     </form>
     <hr>
-    <br>
-    <br>
 
+
+    
+    <br>
+    <br>
     <form action="inicio.php" method="post">
         <button name="opcion" value="volver">Volver</button>
     </form>

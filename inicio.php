@@ -1,13 +1,12 @@
 <?php
 
-
 function inicio(){
     if (isset($_POST["opcion"])) {
         $opcion = $_POST["opcion"];
 
         switch ($opcion) {
             case 'asig':
-                header("location: asignaturas.php");
+                header("location: vista_asig.php");
                 die();
                 break;
             
