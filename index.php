@@ -27,7 +27,7 @@
                         break;
                     
                     case 'alumn':
-                        header("location: alumnos.php");
+                        header("location: alumn_vista.php");
                         die();
                         break;
 

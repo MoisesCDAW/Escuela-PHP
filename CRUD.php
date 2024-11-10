@@ -74,7 +74,7 @@ function leer($columnas, $tabla, $filtro=null){
             $sql = $conn->prepare($sql);
             $sql->bindParam(":filtro", $filtro);
             $sql->execute();
-            $datos = $sql->fetch(PDO::FETCH_ASSOC);
+            $datos = $sql->fetchAll(PDO::FETCH_ASSOC);
         }
 
         return $datos;
@@ -130,6 +130,101 @@ function borrar($tabla, $ID){
         $sql->bindParam(":ID", $ID);
         $sql->execute();
 
+
+    } catch (PDOException $th) {
+        var_dump("Read ERROR: " . $th->getMessage());
+        die();
+    }
+}
+
+
+/**
+ * Busca un alumno por su dni
+ */
+function buscarAlumno($columnas, $dni){
+    global $conn; 
+
+    $columnas = implode(",",$columnas);
+
+    try {
+        $sql = "SELECT $columnas FROM alumnos WHERE dni = :dni";
+        $sql = $conn->prepare($sql);
+        $sql->bindParam(":dni", $dni);
+        $sql->execute();
+
+        $datos = $sql->fetch(PDO::FETCH_ASSOC);
+
+        return $datos;
+
+    } catch (PDOException $th) {
+        var_dump("Read ERROR: " . $th->getMessage());
+        die();
+    }
+} 
+
+
+/**
+ * Devuele un array con las asignaturas de un alumno buscando por ID_alumn
+ */
+function buscarAsig($ID){
+    global $conn; 
+
+    try {
+        $sql = "SELECT ID, abreviatura FROM asignaturas WHERE ID IN(
+        SELECT ID_asig FROM cursantes WHERE ID_alumn = :ID)";
+        $sql = $conn->prepare($sql);
+        $sql->bindParam(":ID", $ID);
+        $sql->execute();
+
+        $datos = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+        return $datos;
+
+    } catch (PDOException $th) {
+        var_dump("Read ERROR: " . $th->getMessage());
+        die();
+    }
+}
+
+
+/**
+ * Devuele un array con el ID e ID_asig de la tabla "cursantes" correspondiente a un ID_alumn
+ */
+function datosCursante($ID){
+    global $conn; 
+
+    try {
+        $sql = "SELECT ID, ID_asig FROM cursantes WHERE ID_alumn = :ID";
+        $sql = $conn->prepare($sql);
+        $sql->bindParam(":ID", $ID);
+        $sql->execute();
+
+        $datos = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+        return $datos;
+
+    } catch (PDOException $th) {
+        var_dump("Read ERROR: " . $th->getMessage());
+        die();
+    }
+}
+
+
+/**
+ * Devuelve un array de la tabla "cursantes" con todos los ID_alumn de una asignatura
+ */
+function cursaPorAsignatura($ID){
+    global $conn; 
+
+    try {
+        $sql = "SELECT ID_alumn FROM cursantes WHERE ID_asig = :ID";
+        $sql = $conn->prepare($sql);
+        $sql->bindParam(":ID", $ID);
+        $sql->execute();
+
+        $datos = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+        return $datos;
 
     } catch (PDOException $th) {
         var_dump("Read ERROR: " . $th->getMessage());

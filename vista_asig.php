@@ -10,10 +10,9 @@
     <title>Asignaturas</title>
 
     <style>
-        #asig {
-            display: flex;
-            align-items: center;
-            gap: 10%;
+        .panel {
+            width: 650px;
+            text-align: center;
         }
     </style>
 
@@ -22,28 +21,35 @@
 
     <p>CREAR ASIGNATURA</p>
     <form action="logica_asig.php" method="post">
-        <input type="text" placeholder="Nombre de la asignatura" name="asignatura">
+        <input type="text" placeholder="Abreviatura. Ej.: DSW" name="abreviatura">
+        <input type="text" placeholder="Nombre de la asignatura" name="nombre" style='width:250px;'>
         <button name="gestion" value="crear-asig">Crear</button>
         <?php 
-            if (isset($_SESSION["creada"])) {
-                echo $_SESSION["creada"];
-                $_SESSION["creada"] = "";
+            if (isset($_SESSION["mensaje"])) {
+                echo $_SESSION["mensaje"];
+                unset($_SESSION["mensaje"]);
             }
         ?>
     </form>
     <br><hr>
 
     <p>GESTIONAR ASIGNATURAS</p>
+    <hr>
     <?php 
             if (isset($_SESSION["borrada"])) {
                 echo $_SESSION["borrada"];
-                $_SESSION["borrada"] = "";
+                unset($_SESSION["borrada"]);
             }
         ?>
     <form action="logica_asig.php" method="post">
-        <?php 
-            getAsignaturas();
-        ?>
+        <table class="panel">
+            <tr>
+                <th>Abreviatura</th>
+                <th>Nombre</th>
+                <th></th>
+            </tr>
+            <?php panelAsig(); ?>
+        </table>
     </form>
     <hr>
 

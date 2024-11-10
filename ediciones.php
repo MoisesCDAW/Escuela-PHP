@@ -16,7 +16,7 @@ include "CRUD.php";?>
 
         if (isset($_SESSION["mensaje"])) {
             echo $_SESSION["mensaje"];
-            $_SESSION["mensaje"] = "";
+            unset($_SESSION["mensaje"]);
         }
 
         if (isset($_SESSION["volver"])) {

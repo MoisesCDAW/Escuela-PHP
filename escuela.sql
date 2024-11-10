@@ -7,14 +7,15 @@ USE escuela;
 
 CREATE TABLE asignaturas (
     ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    nombre varchar(30) NOT NULL
+    abreviatura varchar(5) NOT NULL,
+    nombre varchar(50) NOT NULL
 );
 
 
 CREATE TABLE alumnos (
     ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     dni varchar(9) NOT NULL,
-    nombre varchar(15) DEFAULT NULL,
+    nombre varchar(30) DEFAULT NULL,
     apellidos varchar(30) DEFAULT NULL
 );
 

@@ -5,25 +5,54 @@ include "CRUD.php";
 /**
  * Crea el panel de gestión en la página de vista_asig.php
  */
-function getAsignaturas(){
+function panelAsig(){
     $datos = leer(["*"], "asignaturas");
-    if ($datos==[]) {
-        echo "<br>Sin registros";
-    }else{
+    if ($datos!=[]) {
         for ($i=0; $i<count($datos);$i++) {
-            $aux = $datos[$i]["nombre"];
-            $aux2 = $datos[$i]["ID"];
+            $ID = $datos[$i]["ID"];
+            $abreviatura = $datos[$i]["abreviatura"];
+            $nombre = $datos[$i]["nombre"];
             echo "
-            <div id='asig'>
-                <p>$aux</p>
-                <div>
-                    <button name='gestion' value='editar-asig, $aux2'>Editar</button>
-                    <button name='gestion' value='borrar-asig, $aux2'>Borrar</button>
-                </div>
-            </div>
+            <tr>
+                <td>$abreviatura</td>
+                <td>$nombre</td>
+                <td>
+                    <button name='gestion' value='editar-asig, $ID'>Editar</button>
+                    <button name='gestion' value='borrar-asig, $ID' onclick='return confirm(\"Confirmar borrado\")'>Borrar</button>
+                </td>
+            </tr>
             ";
         } 
     }
+}
+
+
+/**
+ * Valida los datos de entrada y crea asignaturas
+ */
+function crearAsig(){
+    $valido = 0;
+
+    if ($_POST["abreviatura"]!=""){
+        $abreviatura = $_POST["abreviatura"];
+
+        if ($_POST["nombre"]!="") {
+            $nombre = $_POST["nombre"];
+
+            crear("asignaturas",["abreviatura","nombre"],[$abreviatura, $nombre]);
+
+            $valido = 1;
+        }
+    }
+
+    if (!$valido) {
+        $_SESSION["mensaje"] = "<p>No pueden haber campos vacíos</p>";
+    }else {
+        $_SESSION["mensaje"] = "<p style='color: green;'> ¡Asignatura creada!</p>";
+    }
+
+    header("location: vista_asig.php");
+    die();    
 }
 
 
@@ -35,29 +64,39 @@ function getAsignaturas(){
  */
 function actualizarAsig($ID){
     $datos = leer(["*"], "asignaturas", $ID);
-    $nombre = $datos["nombre"];
+    $abrev = $datos[0]["abreviatura"];
+    $nombre = $datos[0]["nombre"];
+    $valido = 0;
 
-    if ($_POST["asignatura"]!="") {
-        $nombre = $_POST["asignatura"];
-        actualizar("asignaturas", ["nombre"], [$nombre], $ID);
+    if ($_POST["abreviatura"]!="") {
+        $abrev = $_POST["abreviatura"];
+        
+        if ($_POST["nombre"]!="") {
+            $nombre = $_POST["nombre"];
+            actualizar("asignaturas", ["abreviatura", "nombre"], [$abrev, $nombre], $ID);
+    
+            $_SESSION["DOM"] = "
+                <p>EDITAR ASIGNATURA</p>
+                <form action='logica_asig.php' method='post'>
+                    <input type='text' placeholder='Nueva Abreviatura. Ej.: DSW' name='abreviatura' value=$abrev>
+                    <input type='text' placeholder='Nuevo nombre' name='nombre' value='$nombre' style='width:250px;'>
+                    <button name='gestion' value='actua-asig, $ID' onclick='return confirm(\"Confirmar actualización\")'>Guardar</button>
+                </form>
+                <br><hr>
+            ";
+    
+            $valido = 1;
+        }
+    }  
 
-        $_SESSION["DOM"] = "
-            <p>EDITAR ASIGNATURA</p>
-            <form action='logica_asig.php' method='post'>
-                <input type='text' placeholder='Nuevo nombre de la asignatura' name='asignatura' value=$nombre>
-                <button name='gestion' value='actua-asig, $ID'>Guardar</button>
-            </form>
-            <br><hr>
-        ";
-
-        $_SESSION["mensaje"] = "<p style='color: green;'> ¡Registro actualizado!</p>";
-        header("location: ediciones.php");
-        die();
-    }else{
+    if (!$valido) {
         $_SESSION["mensaje"] = "No pueden haber campos vacíos";
-        header("location: ediciones.php");
-        die();
+    }else{
+        $_SESSION["mensaje"] = "<p style='color: green;'> ¡Registro actualizado!</p>";
     }
+
+    header("location: ediciones.php");
+    die();
 }
 
 
@@ -67,28 +106,46 @@ function actualizarAsig($ID){
  */
 function editarAsig($ID){
     $datos = leer(["*"], "asignaturas", $ID);
-    $nombre = $datos["nombre"];
+    $abrev = $datos[0]["abreviatura"];
+    $nombre = $datos[0]["nombre"];
 
     $_SESSION["DOM"] = "
-        <p>EDITAR ASIGNATURA</p>
-        <form action='logica_asig.php' method='post'>
-            <input type='text' placeholder='Nuevo nombre de la asignatura' name='asignatura' value=$nombre>
-            <button name='gestion' value='actua-asig, $ID'>Guardar</button>
-        </form>
-        <br><hr>
+    <p>EDITAR ASIGNATURA</p>
+    <form action='logica_asig.php' method='post'>
+        <input type='text' placeholder='Nueva Abreviatura. Ej.: DSW' name='abreviatura' value=$abrev>
+        <input type='text' placeholder='Nuevo nombre' name='nombre' value='$nombre' style='width:250px;'>
+        <button name='gestion' value='actua-asig, $ID' onclick='return confirm(\"Confirmar actualización\")'>Guardar</button>
+    </form>
+    <br><hr>
     ";
 
     $_SESSION["volver"] = "
-    
         <br>
         <br>
         <form action='vista_asig.php' method='post'>
             <button>Volver</button>
         </form>
-
     ";
 
     header("location: ediciones.php");
+    die();
+}
+
+
+/**
+ * Confirma el borrado del alumno y luego lo borra o no
+ */
+function borrarAsig($ID){
+    $datos = cursaPorAsignatura($ID);
+
+    foreach ($datos as $value) {
+        borrar("alumnos", $value["ID_alumn"]);
+    }
+
+    borrar("asignaturas", $ID);
+    $_SESSION["borrada"] = "<p style='color: red;'>Aginatura eliminada</p>";
+
+    header("location: vista_asig.php");
     die();
 }
 
@@ -102,35 +159,25 @@ function gestorAsig(){
         $gestion = $_POST["gestion"];
 
         $gestion = explode(",", $gestion);
-        $ID = $gestion[1];
 
         switch ($gestion[0]) {
             case 'crear-asig':
-                if ($_POST["asignatura"]!=""){
-                    $datos = $_POST["asignatura"];
-                    crear("asignaturas",["nombre"],[$datos]);
-
-                    $_SESSION["creada"] = "<p style='color: green;'> ¡Asignatura creada!</p>";
-
-                    header("location: vista_asig.php");
-                    die();
-                }    
+                crearAsig();
                 break;
 
             case 'editar-asig':
+                $ID = $gestion[1];
                 editarAsig($ID);
                 break;
             
             case 'actua-asig':
+                $ID = $gestion[1];
                 actualizarAsig($ID);
                 break;
             
             case 'borrar-asig':
-                borrar("asignaturas", $ID);
-                $_SESSION["borrada"] = "<p style='color: red;'>Aginatura eliminada</p>";
-
-                header("location: vista_asig.php");
-                die();
+                $ID = $gestion[1];
+                borrarAsig($ID);
                 break;
         }
     }
