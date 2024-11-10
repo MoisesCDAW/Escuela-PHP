@@ -10,9 +10,36 @@
     
     <br>
 
-    <form action="inicio.php" method="post">
+    <form action="index.php" method="post">
         <button name="opcion" value="asig">Asignaturas</button>
         <button name="opcion" value="alumn">Alumnos</button>
     </form>
+
+    <?php
+    function inicio(){
+            if (isset($_POST["opcion"])) {
+                $opcion = $_POST["opcion"];
+
+                switch ($opcion) {
+                    case 'asig':
+                        header("location: vista_asig.php");
+                        die();
+                        break;
+                    
+                    case 'alumn':
+                        header("location: alumnos.php");
+                        die();
+                        break;
+
+                    case 'volver':
+                        header("location: index.php");
+                        die();
+                        break;
+                }
+            }
+        }
+
+        inicio();
+    ?>
 </body>
 </html>

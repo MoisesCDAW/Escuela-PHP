@@ -49,7 +49,7 @@
 
     <br>
     <br>
-    <form action="inicio.php" method="post">
+    <form action="index.php" method="post">
         <button name="opcion" value="volver">Volver</button>
     </form>
 </body>

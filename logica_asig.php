@@ -1,6 +1,10 @@
 <?php 
 include "CRUD.php";
 
+
+/**
+ * Crea el panel de gestión en la página de vista_asig.php
+ */
 function getAsignaturas(){
     $datos = leer(["*"], "asignaturas");
     if ($datos==[]) {
@@ -23,12 +27,30 @@ function getAsignaturas(){
 }
 
 
+/**
+ * Complemento de la función editar
+ * Se activa después de enviar el formulario desde la página de ediciones.php
+ * Se cambia el DOM para poder mostrar el nuevo "value" del input en caso de ser actualizado
+ * 
+ */
 function actualizarAsig($ID){
+    $datos = leer(["*"], "asignaturas", $ID);
+    $nombre = $datos["nombre"];
+
     if ($_POST["asignatura"]!="") {
         $nombre = $_POST["asignatura"];
         actualizar("asignaturas", ["nombre"], [$nombre], $ID);
 
-        $_SESSION["mensaje"] = "¡Registro actualizado!";
+        $_SESSION["DOM"] = "
+            <p>EDITAR ASIGNATURA</p>
+            <form action='logica_asig.php' method='post'>
+                <input type='text' placeholder='Nuevo nombre de la asignatura' name='asignatura' value=$nombre>
+                <button name='gestion' value='actua-asig, $ID'>Guardar</button>
+            </form>
+            <br><hr>
+        ";
+
+        $_SESSION["mensaje"] = "<p style='color: green;'> ¡Registro actualizado!</p>";
         header("location: ediciones.php");
         die();
     }else{
@@ -39,6 +61,10 @@ function actualizarAsig($ID){
 }
 
 
+/**
+ * Guarda el DOM a mostrar en una sesión, tanto de los inputs como del botón de volver
+ * Redirecciona a la página de ediciones.php
+ */
 function editarAsig($ID){
     $datos = leer(["*"], "asignaturas", $ID);
     $nombre = $datos["nombre"];
@@ -46,7 +72,7 @@ function editarAsig($ID){
     $_SESSION["DOM"] = "
         <p>EDITAR ASIGNATURA</p>
         <form action='logica_asig.php' method='post'>
-            <input type='text' placeholder='Nuevo nombre de la asignatura' name='asignatura'>
+            <input type='text' placeholder='Nuevo nombre de la asignatura' name='asignatura' value=$nombre>
             <button name='gestion' value='actua-asig, $ID'>Guardar</button>
         </form>
         <br><hr>
@@ -67,14 +93,8 @@ function editarAsig($ID){
 }
 
 
-function borrarAsig(){
-    var_dump("borrar");
-    die();
-}
-
-
 /**
- * GESTIONA ENVÍOS
+ * GESTIONA ACCIONES
  */
 function gestorAsig(){
 
@@ -90,7 +110,7 @@ function gestorAsig(){
                     $datos = $_POST["asignatura"];
                     crear("asignaturas",["nombre"],[$datos]);
 
-                    $_SESSION["creada"] = "¡Asignatura creada!";
+                    $_SESSION["creada"] = "<p style='color: green;'> ¡Asignatura creada!</p>";
 
                     header("location: vista_asig.php");
                     die();
@@ -107,7 +127,7 @@ function gestorAsig(){
             
             case 'borrar-asig':
                 borrar("asignaturas", $ID);
-                $_SESSION["borrada"] = "Aginatura eliminada<br>";
+                $_SESSION["borrada"] = "<p style='color: red;'>Aginatura eliminada</p>";
 
                 header("location: vista_asig.php");
                 die();
