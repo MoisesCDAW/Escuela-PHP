@@ -137,9 +137,15 @@ function editarAsig($ID){
  */
 function borrarAsig($ID){
     $datos = cursaPorAsignatura($ID);
+    $aux = [];
 
     foreach ($datos as $value) {
-        borrar("alumnos", $value["ID_alumn"]);
+
+        $aux = datosCursante($value["ID_alumn"]);
+        if (count($aux)==1) {
+            borrar("alumnos", $value["ID_alumn"]);
+        }
+        
     }
 
     borrar("asignaturas", $ID);
