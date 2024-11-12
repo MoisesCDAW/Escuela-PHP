@@ -21,9 +21,9 @@ CREATE TABLE alumnos (
 
 
 CREATE TABLE cursantes (
-    ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    ID_alumn int NOT NULL,
-    ID_asig int NOT NULL,
+    ID_alumn int,
+    ID_asig int,
+    PRIMARY KEY (ID_alumn, ID_asig),
     FOREIGN KEY (ID_alumn) REFERENCES alumnos(ID) ON DELETE CASCADE,
     FOREIGN KEY (ID_asig) REFERENCES asignaturas(ID) ON DELETE CASCADE
 );
@@ -46,10 +46,10 @@ CREATE TABLE actividades (
 
 
 CREATE TABLE notas (
-    ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     nota int NOT NULL,
     ID_act int NOT NULL,
     ID_alumn int NOT NULL,
+    PRIMARY KEY (ID_act, ID_alumn),
     FOREIGN KEY (ID_act) REFERENCES actividades(ID) ON DELETE CASCADE,
     FOREIGN KEY (ID_alumn) REFERENCES alumnos(ID) ON DELETE CASCADE
 );

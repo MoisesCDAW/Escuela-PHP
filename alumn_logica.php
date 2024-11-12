@@ -7,7 +7,7 @@ include "CRUD.php";
 function pintaCheckbox($asigs=null){
     $asigsEdicion = [];
 
-    if ($asigs!=null) {
+    if ($asigs!=null) { // Guarda los check marcados
         $IDs_existentes = [];
         foreach ($asigs as $value) {
             array_push($IDs_existentes, $value["ID"]);
@@ -19,19 +19,21 @@ function pintaCheckbox($asigs=null){
         echo "<br>Sin registros";
     }else{
         for ($i=0; $i<count($datos);$i++) {
-            $ID = $datos[$i]["ID"];
+            $ID_asig = $datos[$i]["ID"];
             $abrev = $datos[$i]["abreviatura"];
 
             if ($asigs!=null) {
-                if(in_array($ID, $IDs_existentes)){
-                    array_push($asigsEdicion, "<input type='checkbox' name='asig-alumn[]' value=$ID checked> ".$abrev);
+                if(in_array($ID_asig, $IDs_existentes)){
+                    array_push($asigsEdicion, "<input type='checkbox' name='asig-alumn[]' value=$ID_asig checked> ".$abrev);
                 }else{
-                    array_push($asigsEdicion, "<input type='checkbox' name='asig-alumn[]' value=$ID> ".$abrev);
+                    array_push($asigsEdicion, "<input type='checkbox' name='asig-alumn[]' value=$ID_asig> ".$abrev);
                 }
             }else{
-                echo "<input type='checkbox' name='asig-alumn[]' value=$ID> ".$abrev;
-            }
-            
+                echo "<input type='checkbox' name='asig-alumn[]' value=$ID_asig> ".$abrev;
+                if ($asigs==null) { // Si ese alumno no sale en "cursantes", permite pintar los checkbox
+                    array_push($asigsEdicion, "<input type='checkbox' name='asig-alumn[]' value=$ID_asig> ".$abrev);
+                }      
+            }  
         } 
     }
 
@@ -132,7 +134,7 @@ function actualizaCheck($ID){
                 unset($newChecks[$aux]);
                 continue;
             }
-            borrar("cursantes", $value["ID"]);
+            borrar("cursantes", [$ID, $value["ID_asig"]], ["ID_alumn", "ID_asig"]);
         }
 
         foreach ($newChecks as $value) {
@@ -261,7 +263,7 @@ function editarAlumn($ID){
  */
 function borrarAlumn($ID){
 
-    borrar("alumnos", $ID);
+    borrar("alumnos", [$ID]);
     $_SESSION["borrada"] = "<p style='color: red;'>Alumn@ eliminad@</p>";
 
     header("location: alumn_vista.php");

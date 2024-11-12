@@ -80,7 +80,7 @@ function leer($columnas, $tabla, $filtro=null){
         return $datos;
 
     } catch (PDOException $th) {
-        var_dump("Read ERROR: " . $th->getMessage());
+        var_dump("Read ERROR en leer(): " . $th->getMessage());
         die();
     }
 }
@@ -112,7 +112,7 @@ function actualizar($tabla, $columnas, $valores, $ID){
         $sql->execute();
 
     } catch (PDOException $th) {
-        var_dump("Read ERROR: " . $th->getMessage());
+        var_dump("Update ERROR: " . $th->getMessage());
         die();
     }
 }
@@ -121,18 +121,38 @@ function actualizar($tabla, $columnas, $valores, $ID){
 /**
  *  ELIMIMA UN REGISTRO
  */
-function borrar($tabla, $ID){
+function borrar($tabla, $ID, $columnas=null){
     global $conn; 
 
+    if ($columnas!=null) {
+        $str = "";
+        for ($i=0; $i < count($columnas); $i++) { 
+            $str .= $columnas[$i] . "= :" . $i;
+            if ($i!=count($ID)-1) {
+                $str .= " and ";
+            }
+        }
+    }
+
     try {
-        $sql = "DELETE FROM $tabla WHERE ID = :ID";
-        $sql = $conn->prepare($sql);
-        $sql->bindParam(":ID", $ID);
+        if ($columnas==null) {
+            $sql = "DELETE FROM $tabla WHERE ID = :ID";
+            $sql = $conn->prepare($sql);
+            $sql->bindParam(":ID", $ID[0]);
+            
+        }else{
+            $sql = "DELETE FROM $tabla WHERE $str";
+            $sql = $conn->prepare($sql);
+
+            for ($i=0; $i < count($ID); $i++) { 
+                $sql->bindParam(":".$i, $ID[$i]);
+            }     
+        }
+
         $sql->execute();
 
-
     } catch (PDOException $th) {
-        var_dump("Read ERROR: " . $th->getMessage());
+        var_dump("Delete ERROR: " . $th->getMessage());
         die();
     }
 }
@@ -157,7 +177,7 @@ function buscarAlumno($columnas, $dni){
         return $datos;
 
     } catch (PDOException $th) {
-        var_dump("Read ERROR: " . $th->getMessage());
+        var_dump("Read ERROR en buscarAlumno(): " . $th->getMessage());
         die();
     }
 } 
@@ -181,7 +201,7 @@ function buscarAsig($ID){
         return $datos;
 
     } catch (PDOException $th) {
-        var_dump("Read ERROR: " . $th->getMessage());
+        var_dump("Read ERROR en buscarAsig(): " . $th->getMessage());
         die();
     }
 }
@@ -194,7 +214,7 @@ function datosCursante($ID){
     global $conn; 
 
     try {
-        $sql = "SELECT ID, ID_asig FROM cursantes WHERE ID_alumn = :ID";
+        $sql = "SELECT ID_asig FROM cursantes WHERE ID_alumn = :ID";
         $sql = $conn->prepare($sql);
         $sql->bindParam(":ID", $ID);
         $sql->execute();
@@ -204,7 +224,7 @@ function datosCursante($ID){
         return $datos;
 
     } catch (PDOException $th) {
-        var_dump("Read ERROR: " . $th->getMessage());
+        var_dump("Read ERROR en datosCursante(): " . $th->getMessage());
         die();
     }
 }
@@ -213,21 +233,21 @@ function datosCursante($ID){
 /**
  * Devuelve un array de la tabla "cursantes" con todos los ID_alumn de una asignatura
  */
-function cursaPorAsignatura($ID){
-    global $conn; 
+// function cursaPorAsignatura($ID){
+//     global $conn; 
 
-    try {
-        $sql = "SELECT ID_alumn FROM cursantes WHERE ID_asig = :ID";
-        $sql = $conn->prepare($sql);
-        $sql->bindParam(":ID", $ID);
-        $sql->execute();
+//     try {
+//         $sql = "SELECT ID_alumn FROM cursantes WHERE ID_asig = :ID";
+//         $sql = $conn->prepare($sql);
+//         $sql->bindParam(":ID", $ID);
+//         $sql->execute();
 
-        $datos = $sql->fetchAll(PDO::FETCH_ASSOC);
+//         $datos = $sql->fetchAll(PDO::FETCH_ASSOC);
 
-        return $datos;
+//         return $datos;
 
-    } catch (PDOException $th) {
-        var_dump("Read ERROR: " . $th->getMessage());
-        die();
-    }
-}
+//     } catch (PDOException $th) {
+//         var_dump("Read ERROR: " . $th->getMessage());
+//         die();
+//     }
+// }

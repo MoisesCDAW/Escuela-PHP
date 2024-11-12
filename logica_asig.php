@@ -136,19 +136,7 @@ function editarAsig($ID){
  * Confirma el borrado del alumno y luego lo borra o no
  */
 function borrarAsig($ID){
-    $datos = cursaPorAsignatura($ID);
-    $aux = [];
-
-    foreach ($datos as $value) {
-
-        $aux = datosCursante($value["ID_alumn"]);
-        if (count($aux)==1) {
-            borrar("alumnos", $value["ID_alumn"]);
-        }
-        
-    }
-
-    borrar("asignaturas", $ID);
+    borrar("asignaturas", [$ID]);
     $_SESSION["borrada"] = "<p style='color: red;'>Aginatura eliminada</p>";
 
     header("location: vista_asig.php");
