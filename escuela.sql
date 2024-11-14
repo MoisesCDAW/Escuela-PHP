@@ -33,14 +33,16 @@ CREATE TABLE unidades (
     ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     numero int NOT NULL,
     ID_asig int NOT NULL,
+    nombre varchar(40) NOT NULL,
     FOREIGN KEY (ID_asig) REFERENCES asignaturas(ID) ON DELETE CASCADE
 );
 
 
 CREATE TABLE actividades (
-    ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    titulo varchar(30) NOT NULL,
+    ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,  
     ID_unid int NOT NULL,
+    numero int NOT NULL,
+    nombre varchar(40) NOT NULL,
     FOREIGN KEY (ID_unid) REFERENCES unidades(ID) ON DELETE CASCADE
 );
 

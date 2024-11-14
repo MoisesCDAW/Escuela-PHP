@@ -13,6 +13,7 @@
     <form action="index.php" method="post">
         <button name="opcion" value="asig">Asignaturas</button>
         <button name="opcion" value="alumn">Alumnos</button>
+        <button name="opcion" value="unidad">Unidades</button>
     </form>
 
     <?php
@@ -28,6 +29,11 @@
                     
                     case 'alumn':
                         header("location: alumn_vista.php");
+                        die();
+                        break;
+
+                    case 'unidad':
+                        header("location: vista_unid.php");
                         die();
                         break;
 

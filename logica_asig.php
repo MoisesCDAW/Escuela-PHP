@@ -75,16 +75,6 @@ function actualizarAsig($ID){
             $nombre = $_POST["nombre"];
             actualizar("asignaturas", ["abreviatura", "nombre"], [$abrev, $nombre], $ID);
     
-            $_SESSION["DOM"] = "
-                <p>EDITAR ASIGNATURA</p>
-                <form action='logica_asig.php' method='post'>
-                    <input type='text' placeholder='Nueva Abreviatura. Ej.: DSW' name='abreviatura' value=$abrev>
-                    <input type='text' placeholder='Nuevo nombre' name='nombre' value='$nombre' style='width:250px;'>
-                    <button name='gestion' value='actua-asig, $ID' onclick='return confirm(\"Confirmar actualización\")'>Guardar</button>
-                </form>
-                <br><hr>
-            ";
-    
             $valido = 1;
         }
     }  
@@ -95,6 +85,7 @@ function actualizarAsig($ID){
         $_SESSION["mensaje"] = "<p style='color: green;'> ¡Registro actualizado!</p>";
     }
 
+    editarAsig($ID);
     header("location: ediciones.php");
     die();
 }
@@ -133,11 +124,11 @@ function editarAsig($ID){
 
 
 /**
- * Confirma el borrado del alumno y luego lo borra o no
+ * Borra una asignatura
  */
 function borrarAsig($ID){
     borrar("asignaturas", [$ID]);
-    $_SESSION["borrada"] = "<p style='color: red;'>Aginatura eliminada</p>";
+    $_SESSION["borrada"] = "<p style='color: red;'>Asignatura eliminada</p>";
 
     header("location: vista_asig.php");
     die();
@@ -153,6 +144,7 @@ function gestorAsig(){
         $gestion = $_POST["gestion"];
 
         $gestion = explode(",", $gestion);
+        $ID = $gestion[1];
 
         switch ($gestion[0]) {
             case 'crear-asig':
@@ -160,17 +152,14 @@ function gestorAsig(){
                 break;
 
             case 'editar-asig':
-                $ID = $gestion[1];
                 editarAsig($ID);
                 break;
             
             case 'actua-asig':
-                $ID = $gestion[1];
                 actualizarAsig($ID);
                 break;
             
             case 'borrar-asig':
-                $ID = $gestion[1];
                 borrarAsig($ID);
                 break;
         }

@@ -90,18 +90,16 @@ function crearAlumn(){
             $nombre = $_POST["nombre-alumn"];
             if ($_POST["apell-alumn"]!=""){
                 $apell = $_POST["apell-alumn"];
-                if ($_POST["asig-alumn"]!=[]){
-                    $asig = $_POST["asig-alumn"];
+                $asig = $_POST["asig-alumn"];
                     
-                    crear("alumnos", ["dni","nombre","apellidos"], [$dni, $nombre, $apell]);
-                    $id = buscarAlumno(["ID"],$dni);
+                crear("alumnos", ["dni","nombre","apellidos"], [$dni, $nombre, $apell]);
+                $id = buscarAlumno(["ID"],$dni);
 
-                    foreach ($asig as $value) {
-                        crear("cursantes", ["ID_alumn", "ID_asig"], [$id["ID"], $value]);
-                    }
-
-                    $valido = 1;
+                foreach ($asig as $value) {
+                    crear("cursantes", ["ID_alumn", "ID_asig"], [$id["ID"], $value]);
                 }
+
+                $valido = 1;
             }
         } 
     }
@@ -122,32 +120,34 @@ function crearAlumn(){
  * Se activa cuando se envía el formulario de los checkboxs
  */
 function actualizaCheck($ID){
-    $valido = 0;
+    $valido = 1; // Cambiar a 0 para aplicar validaciones
 
-    if ($_POST["asig-alumn"]!=[]) {
-        $newChecks = $_POST["asig-alumn"];
-        $datosCursante = datosCursante($ID);
-
-        foreach ($datosCursante as $value) {
-            $aux = array_search($value["ID_asig"], $newChecks);
-            if ($aux!=false) {
-                unset($newChecks[$aux]);
-                continue;
-            }
-            borrar("cursantes", [$ID, $value["ID_asig"]], ["ID_alumn", "ID_asig"]);
-        }
-
-        foreach ($newChecks as $value) {
-            crear("cursantes", ["ID_alumn", "ID_asig"], [$ID, $value]);
-        }
-
-        
-        $valido = 1;
-        
+    $newChecks = $_POST["asig-alumn"];
+    
+    if ($newChecks==null) {
+        $newChecks = [];
     }
 
+    $datosCursante = datosCursante($ID);
+
+    foreach ($datosCursante as $value) {
+        $aux = array_search($value["ID_asig"], $newChecks);
+        if ($aux!=false) {
+            unset($newChecks[$aux]);
+            continue;
+        }
+        borrar("cursantes", [$ID, $value["ID_asig"]], ["ID_alumn", "ID_asig"]);
+    }
+
+    foreach ($newChecks as $value) {
+        crear("cursantes", ["ID_alumn", "ID_asig"], [$ID, $value]);
+    }
+
+    
+    // $valido = 1;
+
     if (!$valido) {
-        $_SESSION["mensaje"] = "No pueden haber campos vacíos";
+        // $_SESSION["mensaje"] = "No pueden haber campos vacíos";
     }else{
         $_SESSION["mensaje"] = "<p style='color: green;'> ¡Registro actualizado!</p>";
     }
