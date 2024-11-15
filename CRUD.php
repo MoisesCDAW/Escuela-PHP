@@ -228,26 +228,3 @@ function datosCursante($ID){
         die();
     }
 }
-
-
-/**
- * Devuelve un array de la tabla "cursantes" con todos los ID_alumn de una asignatura
- */
-// function cursaPorAsignatura($ID){
-//     global $conn; 
-
-//     try {
-//         $sql = "SELECT ID_alumn FROM cursantes WHERE ID_asig = :ID";
-//         $sql = $conn->prepare($sql);
-//         $sql->bindParam(":ID", $ID);
-//         $sql->execute();
-
-//         $datos = $sql->fetchAll(PDO::FETCH_ASSOC);
-
-//         return $datos;
-
-//     } catch (PDOException $th) {
-//         var_dump("Read ERROR: " . $th->getMessage());
-//         die();
-//     }
-// }

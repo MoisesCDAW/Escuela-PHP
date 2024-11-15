@@ -4,12 +4,7 @@ include "CRUD.php";
 /**
  * Crea los radio de cada asignatura
  */
-function pintaRadio($asig=null){
-    $asigsEdicion = [];
-
-    if ($asig!=null) { // Guarda el ID de la asig del radio marcado
-        $ID_existente = $asig["ID"];
-    }
+function pintaRadio(){
 
     $datos = leer(["*"], "asignaturas");
     if ($datos==[]) {
@@ -19,19 +14,9 @@ function pintaRadio($asig=null){
             $ID_asig = $datos[$i]["ID"];
             $abrev = $datos[$i]["abreviatura"];
 
-            if ($asig!=null) {
-                if($ID_asig == $ID_existente){
-                    array_push($asigsEdicion, "<input type='radio' name='asig-unid' value=$ID_asig checked> ".$abrev);
-                }else{
-                    array_push($asigsEdicion, "<input type='radio' name='asig-unid' value=$ID_asig> ".$abrev);
-                }
-            }else{
-                echo "<input type='radio' name='asig-unid' value=$ID_asig> ".$abrev;      
-            }  
-        } 
+            echo "<input type='radio' name='asig-unid' value=$ID_asig> ".$abrev;      
+        }
     }
-
-    return $asigsEdicion;
 }
 
 

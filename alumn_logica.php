@@ -117,7 +117,7 @@ function crearAlumn(){
 
 /**
  * Actualiza las asignaturas de un alumno
- * Se activa cuando se envía el formulario de los checkboxs
+ * Se activa cuando se envía el formulario de los checkboxes
  */
 function actualizaCheck($ID){
     $valido = 1; // Cambiar a 0 para aplicar validaciones
