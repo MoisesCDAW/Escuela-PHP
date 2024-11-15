@@ -24,9 +24,9 @@
         <input type="number" placeholder="Número de Unidad" name="numero">
         <input type="text" placeholder="Nombre de la unidad" name="nombre" style='width:250px;'>
         <br>
-        <p>Selecciona las asignaturas a las que pertenecerá:</p>
+        <p>Selecciona la asignatura a la que pertenecerá:</p>
         <?php 
-            // $datos = pintaCheckbox();
+            $datos = pintaRadio();
         ?>
         <br>
         <br>
@@ -55,6 +55,7 @@
             <tr>
                 <th>Número</th>
                 <th>Nombre</th>
+                <th>Asignatura</th>
                 <th></th>
             </tr>
             <?php panelUnid(); ?>

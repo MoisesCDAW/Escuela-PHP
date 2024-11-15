@@ -4,7 +4,7 @@ include "CRUD.php";
 /**
  * Crea los radio de cada asignatura
  */
-function pintaCheckbox($asig=null){
+function pintaRadio($asig=null){
     $asigsEdicion = [];
 
     if ($asig!=null) { // Guarda el ID de la asig del radio marcado
@@ -21,12 +21,12 @@ function pintaCheckbox($asig=null){
 
             if ($asig!=null) {
                 if($ID_asig == $ID_existente){
-                    array_push($asigsEdicion, "<input type='checkbox' name='asig-unid[]' value=$ID_asig checked> ".$abrev);
+                    array_push($asigsEdicion, "<input type='radio' name='asig-unid' value=$ID_asig checked> ".$abrev);
                 }else{
-                    array_push($asigsEdicion, "<input type='checkbox' name='asig-unid[]' value=$ID_asig> ".$abrev);
+                    array_push($asigsEdicion, "<input type='radio' name='asig-unid' value=$ID_asig> ".$abrev);
                 }
             }else{
-                echo "<input type='checkbox' name='asig-unid[]' value=$ID_asig> ".$abrev;      
+                echo "<input type='radio' name='asig-unid' value=$ID_asig> ".$abrev;      
             }  
         } 
     }
@@ -40,18 +40,23 @@ function pintaCheckbox($asig=null){
  */
 function panelUnid(){
     $datos = leer(["*"], "unidades");
+
     if ($datos!=[]) {
         for ($i=0; $i<count($datos);$i++) {
             $ID = $datos[$i]["ID"];
             $numero = $datos[$i]["numero"];
             $nombre = $datos[$i]["nombre"];
+            $asig = leer(["abreviatura"], "asignaturas", $datos[$i]["ID_asig"]);
+            $asig = $asig[0]["abreviatura"];
+
             echo "
             <tr>
                 <td>$numero</td>
                 <td>$nombre</td>
+                <td>$asig</td>
                 <td>
-                    <button name='gestion' value='editar-asig, $ID'>Editar</button>
-                    <button name='gestion' value='borrar-asig, $ID' onclick='return confirm(\"Confirmar borrado\")'>Borrar</button>
+                    <button name='gestion' value='editar-unid, $ID'>Editar</button>
+                    <button name='gestion' value='borrar-unid, $ID' onclick='return confirm(\"Confirmar borrado\")'>Borrar</button>
                 </td>
             </tr>
             ";
@@ -72,9 +77,13 @@ function crearUnidad(){
         if ($_POST["nombre"]!="") {
             $nombre = $_POST["nombre"];
 
-            crear("unidades",["numero","nombre"],[$abreviatura, $nombre]);
+            if ($_POST["asig-unid"]!="") {
+                $asig = $_POST["asig-unid"];
 
-            $valido = 1;
+                crear("unidades",["numero","ID_asig","nombre"],[$abreviatura, $asig, $nombre]);
+
+                $valido = 1;
+            }
         }
     }
 
@@ -86,15 +95,6 @@ function crearUnidad(){
 
     header("location: vista_unid.php");
     die();    
-}
-
-
-/**
- * Complemento de la función editarUnid().
- * Marca el radio que corresponde a la asignatura y muestra los demás disponibles
- */
-function radioUnidad($ID){
-    // Similutd a checkEdicion() de alumno_logica
 }
 
 
@@ -111,11 +111,11 @@ function actualizarUnid($ID){
     $valido = 0;
 
     if ($_POST["numero"]!="") {
-        $abrev = $_POST["numero"];
+        $numero = $_POST["numero"];
         
         if ($_POST["nombre"]!="") {
             $nombre = $_POST["nombre"];
-            actualizar("unidades", ["nombre", "nombre"], [$abrev, $nombre], $ID);
+            actualizar("unidades", ["numero", "nombre"], [$numero, $nombre], $ID);
     
             $valido = 1;
         }
@@ -147,17 +147,16 @@ function editarUnid($ID){
     <form action='logica_unid.php' method='post'>
         <input type='number' placeholder='Número de Unidad' name='numero' value=$numero>
         <input type='text' placeholder='Nombre de la unidad' name='nombre' value='$nombre' style='width:250px;'>
-        <button name='gestion' value='crear-unid, $ID' onclick='return confirm(\"Confirmar actualización\")>Guardar</button>
+        <button name='gestion' value='actua-unid, $ID' onclick='return confirm(\"Confirmar actualización\")'>Guardar</button>
     </form>
-    <br><hr>
+    <br>
     ";
-
-    // radioUnidad($ID);
 
     $_SESSION["volver"] = "
         <br>
         <br>
-        <form action='vista_asig.php' method='post'>
+        <br>
+        <form action='vista_unid.php' method='post'>
             <button>Volver</button>
         </form>
     ";
@@ -188,6 +187,7 @@ function gestorUnid(){
         $gestion = $_POST["gestion"];
 
         $gestion = explode(",", $gestion);
+
         $ID = $gestion[1];
 
         switch ($gestion[0]) {
@@ -205,10 +205,6 @@ function gestorUnid(){
             
             case 'borrar-unid':
                 borrarUnid($ID);
-                break;
-
-            case 'actua-asig-unid':
-                // actualizaRadio($ID);
                 break;
         }
     }
