@@ -14,7 +14,6 @@
         <button name="opcion" value="asig">Asignaturas</button>
         <button name="opcion" value="alumn">Alumnos</button>
         <button name="opcion" value="unidad">Unidades</button>
-        <button name="opcion" value="actividad">Actividades</button>
     </form>
 
     <?php
@@ -35,11 +34,6 @@
 
                     case 'unidad':
                         header("location: vista_unid.php");
-                        die();
-                        break;
-
-                    case 'actividad':
-                        header("location: vista_act.php");
                         die();
                         break;
 

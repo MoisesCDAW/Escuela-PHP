@@ -93,7 +93,7 @@ function crearAlumn(){
                 $asig = $_POST["asig-alumn"];
                     
                 crear("alumnos", ["dni","nombre","apellidos"], [$dni, $nombre, $apell]);
-                $id = buscarAlumno(["ID"],$dni);
+                $id = leer(["ID"],"alumnos", "dni", $dni);
 
                 foreach ($asig as $value) {
                     crear("cursantes", ["ID_alumn", "ID_asig"], [$id["ID"], $value]);
@@ -128,7 +128,7 @@ function actualizaCheck($ID){
         $newChecks = [];
     }
 
-    $datosCursante = datosCursante($ID);
+    $datosCursante = leer(["ID_asig"], "cursantes", "ID_alumn", $ID);
 
     foreach ($datosCursante as $value) {
         $aux = array_search($value["ID_asig"], $newChecks);
@@ -187,7 +187,7 @@ function checkEdicion($ID){
  * ACTUALIZAR. Se activa cuándo se envía el formulario de datos de la tabla alumno
  */
 function actualizarAlumn($ID){
-    $datos = leer(["*"], "alumnos", $ID);
+    $datos = leer(["*"], "alumnos", "ID", $ID);
     $dni = $datos[0]["dni"];
     $nombre = $datos[0]["nombre"];
     $apell = $datos[0]["apellidos"];
@@ -226,7 +226,7 @@ function actualizarAlumn($ID){
  * EDITAR
  */
 function editarAlumn($ID){
-    $datos = leer(["*"], "alumnos", $ID);
+    $datos = leer(["*"], "alumnos", "ID", $ID);
     $dni = $datos[0]["dni"];
     $nombre = $datos[0]["nombre"];
     $apell = $datos[0]["apellidos"];

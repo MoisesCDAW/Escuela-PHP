@@ -1,5 +1,5 @@
 <?php 
-    include "logica_act.php";
+    include "logica_notas.php";
 ?>
 
 <!DOCTYPE html>
@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Actividades</title>
+    <title>Notas</title>
 
     <style>
         .panel {
@@ -19,7 +19,7 @@
 </head>
 <body>
 
-    <p>CREAR ACTIVIDAD</p>
+    <p>CREAR NOTA</p>
     <form action="logica_act.php" method="post">
         <input type="number" placeholder="Número de Actividad" name="numero">
         <input type="text" placeholder="Nombre de la Actividad" name="nombre" style='width:250px;'>
@@ -66,7 +66,7 @@
 
     <br>
     <br>
-    <form action="vista_unid.php" method="post">
+    <form action="index.php" method="post">
         <button name="opcion" value="volver">Volver</button>
     </form>
 </body>

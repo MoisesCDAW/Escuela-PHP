@@ -45,10 +45,10 @@ function panelAct(){
             $nombre = $datos[$i]["nombre"];
             $unidad = $datos[$i]["ID_unid"];
             
-            $numUnid = leer(["numero"], "unidades", $unidad);
+            $numUnid = leer(["numero"], "unidades", "ID", $unidad);
             $numUnid = $numUnid[0]["numero"];
 
-            $nomUnid = leer(["nombre"], "unidades", $unidad);
+            $nomUnid = leer(["nombre"], "unidades", "ID", $unidad);
             $nomUnid = $nomUnid[0]["nombre"];
 
             echo "
@@ -129,7 +129,7 @@ function actualizaRadio($ID){
  * Concatena los checkbox marcados o desmarcados al DOM creado por editarAct();
  */
 function radioEdicion($ID){
-    $ID_uni = leer(["ID_unid"], "actividades", $ID);
+    $ID_uni = leer(["ID_unid"], "actividades", "ID", $ID);
     $ID_uni = $ID_uni[0]["ID_unid"];
     $datos = pintaRadio($ID_uni);
 
@@ -158,7 +158,7 @@ function radioEdicion($ID){
  * 
  */
 function actualizarAct($ID){
-    $datos = leer(["*"], "actividades", $ID);
+    $datos = leer(["*"], "actividades", "ID", $ID);
     $numero = $datos[0]["numero"];
     $nombre = $datos[0]["nombre"];
     $valido = 0;
@@ -191,12 +191,12 @@ function actualizarAct($ID){
  * Redirecciona a la página de ediciones.php
  */
 function editarAct($ID){
-    $datos = leer(["*"], "actividades", $ID);
+    $datos = leer(["*"], "actividades", "ID", $ID);
     $numero = $datos[0]["numero"];
     $nombre = $datos[0]["nombre"];
 
     $_SESSION["DOM"] = "
-    <p>CREAR UNIDAD</p>
+    <p>EDITAR ACTIVIDAD</p>
     <form action='logica_act.php' method='post'>
         <input type='number' placeholder='Número de Actividad' name='numero' value=$numero>
         <input type='text' placeholder='Nombre de la Actividad' name='nombre' value='$nombre' style='width:250px;'>

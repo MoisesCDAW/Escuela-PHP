@@ -63,7 +63,7 @@ function crearAsig(){
  * 
  */
 function actualizarAsig($ID){
-    $datos = leer(["*"], "asignaturas", $ID);
+    $datos = leer(["*"], "asignaturas", "ID", $ID);
     $abrev = $datos[0]["abreviatura"];
     $nombre = $datos[0]["nombre"];
     $valido = 0;
@@ -96,7 +96,7 @@ function actualizarAsig($ID){
  * Redirecciona a la página de ediciones.php
  */
 function editarAsig($ID){
-    $datos = leer(["*"], "asignaturas", $ID);
+    $datos = leer(["*"], "asignaturas", "ID", $ID);
     $abrev = $datos[0]["abreviatura"];
     $nombre = $datos[0]["nombre"];
 

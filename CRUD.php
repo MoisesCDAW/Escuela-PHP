@@ -58,7 +58,7 @@ function crear($tabla, $columnas, $valores){
 /**
  * DEVUELVE REGISTROS. Permite filtrar por ID 
  */
-function leer($columnas, $tabla, $filtro=null){
+function leer($columnas, $tabla, $filtro=null, $valor=null){
     global $conn; 
 
     $columnas = implode(",",$columnas); 
@@ -70,9 +70,9 @@ function leer($columnas, $tabla, $filtro=null){
             $sql->execute();
             $datos = $sql->fetchAll(PDO::FETCH_ASSOC);
         }else {
-            $sql = "SELECT $columnas FROM $tabla WHERE ID = :filtro";
+            $sql = "SELECT $columnas FROM $tabla WHERE $filtro = :valor";
             $sql = $conn->prepare($sql);
-            $sql->bindParam(":filtro", $filtro);
+            $sql->bindParam(":valor", $valor);
             $sql->execute();
             $datos = $sql->fetchAll(PDO::FETCH_ASSOC);
         }
@@ -155,31 +155,6 @@ function borrar($tabla, $ID, $columnas=null){
         var_dump("Delete ERROR: " . $th->getMessage());
         die();
     }
-}
-
-
-/**
- * Busca un alumno por su dni
- */
-function buscarAlumno($columnas, $dni){
-    global $conn; 
-
-    $columnas = implode(",",$columnas);
-
-    try {
-        $sql = "SELECT $columnas FROM alumnos WHERE dni = :dni";
-        $sql = $conn->prepare($sql);
-        $sql->bindParam(":dni", $dni);
-        $sql->execute();
-
-        $datos = $sql->fetch(PDO::FETCH_ASSOC);
-
-        return $datos;
-
-    } catch (PDOException $th) {
-        var_dump("Read ERROR en buscarAlumno(): " . $th->getMessage());
-        die();
-    }
 } 
 
 
@@ -202,29 +177,6 @@ function buscarAsig($ID){
 
     } catch (PDOException $th) {
         var_dump("Read ERROR en buscarAsig(): " . $th->getMessage());
-        die();
-    }
-}
-
-
-/**
- * Devuele un array con el ID e ID_asig de la tabla "cursantes" correspondiente a un ID_alumn
- */
-function datosCursante($ID){
-    global $conn; 
-
-    try {
-        $sql = "SELECT ID_asig FROM cursantes WHERE ID_alumn = :ID";
-        $sql = $conn->prepare($sql);
-        $sql->bindParam(":ID", $ID);
-        $sql->execute();
-
-        $datos = $sql->fetchAll(PDO::FETCH_ASSOC);
-
-        return $datos;
-
-    } catch (PDOException $th) {
-        var_dump("Read ERROR en datosCursante(): " . $th->getMessage());
         die();
     }
 }

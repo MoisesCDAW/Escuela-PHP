@@ -31,7 +31,7 @@ function panelUnid(){
             $ID = $datos[$i]["ID"];
             $numero = $datos[$i]["numero"];
             $nombre = $datos[$i]["nombre"];
-            $asig = leer(["abreviatura"], "asignaturas", $datos[$i]["ID_asig"]);
+            $asig = leer(["abreviatura"], "asignaturas", "ID", $datos[$i]["ID_asig"]);
             $asig = $asig[0]["abreviatura"];
 
             echo "
@@ -39,9 +39,11 @@ function panelUnid(){
                 <td>$numero</td>
                 <td>$nombre</td>
                 <td>$asig</td>
-                <td>
+                <td>                  
                     <button name='gestion' value='editar-unid, $ID'>Editar</button>
                     <button name='gestion' value='borrar-unid, $ID' onclick='return confirm(\"Confirmar borrado\")'>Borrar</button>
+                    <span>&nbsp; | &nbsp;</span>
+                    <button name='gestion' value='act-unid, $ID'>Actividades</button>
                 </td>
             </tr>
             ";
@@ -90,7 +92,7 @@ function crearUnidad(){
  * 
  */
 function actualizarUnid($ID){
-    $datos = leer(["*"], "unidades", $ID);
+    $datos = leer(["*"], "unidades", "ID", $ID);
     $numero = $datos[0]["numero"];
     $nombre = $datos[0]["nombre"];
     $valido = 0;
@@ -123,12 +125,12 @@ function actualizarUnid($ID){
  * Redirecciona a la página de ediciones.php
  */
 function editarUnid($ID){
-    $datos = leer(["*"], "unidades", $ID);
+    $datos = leer(["*"], "unidades", "ID", $ID);
     $numero = $datos[0]["numero"];
     $nombre = $datos[0]["nombre"];
 
     $_SESSION["DOM"] = "
-    <p>CREAR UNIDAD</p>
+    <p>EDITAR UNIDAD</p>
     <form action='logica_unid.php' method='post'>
         <input type='number' placeholder='Número de Unidad' name='numero' value=$numero>
         <input type='text' placeholder='Nombre de la unidad' name='nombre' value='$nombre' style='width:250px;'>
@@ -190,6 +192,12 @@ function gestorUnid(){
             
             case 'borrar-unid':
                 borrarUnid($ID);
+                break;
+
+            case 'act-unid':
+                $_SESSION["id_unid"] = $ID;
+                header("location: vista_act.php");
+                die();
                 break;
         }
     }
