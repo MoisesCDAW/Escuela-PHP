@@ -36,7 +36,7 @@ function pintaRadio($unid=null){
  * Crea el panel de gestión en la página de vista_act.php
  */
 function panelAct(){
-    $datos = leer(["*"], "actividades");
+    $datos = leer(["*"], "actividades", "ID_unid", ID_UNIDAD);
 
     if ($datos!=[]) {
         for ($i=0; $i<count($datos);$i++) {
@@ -237,6 +237,15 @@ function borrarAct($ID){
  * GESTIONA ACCIONES
  */
 function gestorAct(){
+
+    if (isset($_SESSION["id_unid"])) {
+        $id_unid = $_SESSION["id_unid"];
+        $numero_unid = leer(["numero"], "unidades", "ID", $id_unid);
+
+        define("ID_UNIDAD", $id_unid);
+        define("UNIDAD", $numero_unid[0]["numero"]);
+    }
+
 
     if (isset($_POST["gestion"])) {
         $gestion = $_POST["gestion"];

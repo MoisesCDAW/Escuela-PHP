@@ -19,15 +19,10 @@
 </head>
 <body>
 
-    <p>CREAR ACTIVIDAD</p>
+    <p>CREAR ACTIVIDAD - <?php echo "Unidad Nº " . UNIDAD?></p>
     <form action="logica_act.php" method="post">
         <input type="number" placeholder="Número de Actividad" name="numero">
         <input type="text" placeholder="Nombre de la Actividad" name="nombre" style='width:250px;'>
-        <br>
-        <p>Selecciona la unidad a la que pertenecerá:</p>
-        <?php 
-            $datos = pintaRadio();
-        ?>
         <br>
         <br>
         <button name="gestion" value="crear-act">Crear</button>
