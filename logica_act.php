@@ -60,6 +60,8 @@ function panelAct(){
                 <td>
                     <button name='gestion' value='editar-act, $ID'>Editar</button>
                     <button name='gestion' value='borrar-act, $ID' onclick='return confirm(\"Confirmar borrado\")'>Borrar</button>
+                    <span>&nbsp; | &nbsp;</span>
+                    <button name='gestion' value='notas-act, $ID'>Calificaciones</button>
                 </td>
             </tr>
             ";
@@ -103,7 +105,7 @@ function actualizaRadio($ID){
     $valido = 1; // Cambiar a 0 para aplicar validaciones
 
     $newRadio = $_POST["unid-act"];
-    actualizar("actividades", ["ID_unid"], [$newRadio], $ID);
+    actualizar("actividades", ["ID_unid"], [$newRadio], ["ID"], [$ID]);
 
     // $valido = 1;
 
@@ -163,7 +165,7 @@ function actualizarAct($ID){
         
         if ($_POST["nombre"]!="") {
             $nombre = $_POST["nombre"];
-            actualizar("actividades", ["numero", "nombre"], [$numero, $nombre], $ID);
+            actualizar("actividades", ["numero", "nombre"], [$numero, $nombre], ["ID"], [$ID]);
     
             $valido = 1;
         }
@@ -220,7 +222,7 @@ function editarAct($ID){
  * Borra una Actividad
  */
 function borrarAct($ID){
-    borrar("actividades", [$ID]);
+    borrar("actividades", ["ID"], [$ID]);
     $_SESSION["borrada"] = "<p style='color: red;'>Actividad eliminada</p>";
 
     header("location: vista_act.php");
@@ -233,16 +235,22 @@ function borrarAct($ID){
  */
 function gestorAct(){
 
-    if (isset($_SESSION["id_unid"])) {
-        $id_unid = $_SESSION["id_unid"];
-        $numero_unid = leer(["numero"], "unidades", "ID", $id_unid);
-        $id_asig = leer(["ID_asig"], "unidades", "ID", $id_unid);
-        $cod_asig = leer(["abreviatura"], "asignaturas", "ID", $id_asig[0]["ID_asig"]);
 
-        define("ID_UNIDAD", $id_unid);
-        define("UNIDAD", $numero_unid[0]["numero"]);
-        define("ID_ASIG", $id_asig[0]["ID_asig"]);
-        define("ASIG", $cod_asig[0]["abreviatura"]);
+    if (isset($_SESSION["id_asig"])) {
+
+        if (isset($_SESSION["id_unid"])) {
+            $id_unid = $_SESSION["id_unid"];
+            $id_asig = $_SESSION["id_asig"];
+
+            $numero_unid = leer(["numero"], "unidades", "ID", $id_unid);
+            $cod_asig = leer(["abreviatura"], "asignaturas", "ID", $id_asig);
+
+            define("ID_ASIG", $id_asig);
+            define("ASIG", $cod_asig[0]["abreviatura"]);
+
+            define("ID_UNIDAD", $id_unid);
+            define("UNIDAD", $numero_unid[0]["numero"]);
+        }
     }
 
 
@@ -272,6 +280,12 @@ function gestorAct(){
 
             case 'actua-unid-act':
                 actualizaRadio($ID);
+                break;
+
+            case 'notas-act':
+                $_SESSION["id_act"] = $ID;
+                header("location: vista_notas.php");
+                die();
                 break;
         }
     }

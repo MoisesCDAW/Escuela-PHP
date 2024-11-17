@@ -69,6 +69,8 @@ function panelAlumn(){
                 <td>
                     <button name='gestion' value='editar-alumn, $ID'>Editar</button>
                     <button name='gestion' value='borrar-alumn, $ID' onclick='return confirm(\"Confirmar borrado\")'>Borrar</button>
+                    <span>&nbsp; | &nbsp;</span>
+                    <button name='gestion' value='notas-alumn, $ID'>Calificaciones</button>    
                 </td>
             </tr>
             
@@ -96,7 +98,7 @@ function crearAlumn(){
                 $id = leer(["ID"],"alumnos", "dni", $dni);
 
                 foreach ($asig as $value) {
-                    crear("cursantes", ["ID_alumn", "ID_asig"], [$id["ID"], $value]);
+                    crear("cursantes", ["ID_alumn", "ID_asig"], [$id[0]["ID"], $value]);
                 }
 
                 $valido = 1;
@@ -136,7 +138,7 @@ function actualizaCheck($ID){
             unset($newChecks[$aux]);
             continue;
         }
-        borrar("cursantes", [$ID, $value["ID_asig"]], ["ID_alumn", "ID_asig"]);
+        borrar("cursantes", ["ID_alumn", "ID_asig"], [$ID, $value["ID_asig"]]);
     }
 
     foreach ($newChecks as $value) {
@@ -202,7 +204,7 @@ function actualizarAlumn($ID){
             if ($_POST["apell-alumn"]!="") {
                 $apell = $_POST["apell-alumn"];
 
-                actualizar("alumnos", ["dni", "nombre", "apellidos"], [$dni, $nombre, $apell], $ID);
+                actualizar("alumnos", ["dni", "nombre", "apellidos"], [$dni, $nombre, $apell], ["ID"], [$ID]);
     
                 $valido = 1;
     
@@ -263,7 +265,7 @@ function editarAlumn($ID){
  */
 function borrarAlumn($ID){
 
-    borrar("alumnos", [$ID]);
+    borrar("alumnos", ["ID"], [$ID]);
     $_SESSION["borrada"] = "<p style='color: red;'>Alumn@ eliminad@</p>";
 
     header("location: alumn_vista.php");

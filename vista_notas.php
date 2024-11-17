@@ -11,7 +11,7 @@
 
     <style>
         .panel {
-            width: 650px;
+            width: 850px;
             text-align: center;
         }
     </style>
@@ -19,54 +19,32 @@
 </head>
 <body>
 
-    <p>CREAR NOTA</p>
-    <form action="logica_act.php" method="post">
-        <input type="number" placeholder="Número de Actividad" name="numero">
-        <input type="text" placeholder="Nombre de la Actividad" name="nombre" style='width:250px;'>
-        <br>
-        <p>Selecciona la unidad a la que pertenecerá:</p>
-        <?php 
-            $datos = pintaRadio();
-        ?>
-        <br>
-        <br>
-        <button name="gestion" value="crear-act">Crear</button>
-        <br>
-        <br>
-        <?php 
-            if (isset($_SESSION["mensaje"])) {
-                echo $_SESSION["mensaje"];
-                unset($_SESSION["mensaje"]);
-            }
-        ?>
-    </form>
-    <br><hr>
+    <p>GESTIONAR CALIFICACIONES - <?php echo "Código Asig.: " . ASIG . " -> Unidad Nº " . UNIDAD . " -> Act. Nº " . ACTIVIDAD?></p>
 
-    <p>GESTIONAR ACTIVIDAD</p>
-    <hr>
     <?php 
-            if (isset($_SESSION["borrada"])) {
-                echo $_SESSION["borrada"];
-                unset($_SESSION["borrada"]);
-            }
-        ?>
-    <form action="logica_act.php" method="post">
+        if (isset($_SESSION["mensaje"])) {
+            echo $_SESSION["mensaje"];
+            unset($_SESSION["mensaje"]);
+        }
+    ?>
+    <hr>
+    <form action="logica_notas.php" method="post">
         <table class="panel">
             <tr>
-                <th>Número</th>
+                <th>DNI</th>
                 <th>Nombre</th>
-                <th>Nº Unid.</th>
-                <th>Nom. Unid.</th>
+                <th>Apellidos</th>
+                <th>Calificación</th>
                 <th></th>
             </tr>
-            <?php panelAct(); ?>
+            <?php panelNotas(); ?>
         </table>
     </form>
     <hr>
 
     <br>
     <br>
-    <form action="index.php" method="post">
+    <form action="vista_act.php" method="post">
         <button name="opcion" value="volver">Volver</button>
     </form>
 </body>

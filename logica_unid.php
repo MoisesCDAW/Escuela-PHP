@@ -78,7 +78,7 @@ function actualizarUnid($ID){
         
         if ($_POST["nombre"]!="") {
             $nombre = $_POST["nombre"];
-            actualizar("unidades", ["numero", "nombre"], [$numero, $nombre], $ID);
+            actualizar("unidades", ["numero", "nombre"], [$numero, $nombre], ["ID"], [$ID]);
     
             $valido = 1;
         }
@@ -133,7 +133,7 @@ function editarUnid($ID){
  * Borra una unidad
  */
 function borrarUnid($ID){
-    borrar("unidades", [$ID]);
+    borrar("unidades", ["ID"], [$ID]);
     $_SESSION["borrada"] = "<p style='color: red;'>Unidad eliminada</p>";
 
     header("location: vista_unid.php");

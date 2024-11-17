@@ -75,7 +75,7 @@ function actualizarAsig($ID){
         
         if ($_POST["nombre"]!="") {
             $nombre = $_POST["nombre"];
-            actualizar("asignaturas", ["abreviatura", "nombre"], [$abrev, $nombre], $ID);
+            actualizar("asignaturas", ["abreviatura", "nombre"], [$abrev, $nombre], ["ID"], [$ID]);
     
             $valido = 1;
         }
@@ -129,7 +129,7 @@ function editarAsig($ID){
  * Borra una asignatura
  */
 function borrarAsig($ID){
-    borrar("asignaturas", [$ID]);
+    borrar("asignaturas", ["ID"], [$ID]);
     $_SESSION["borrada"] = "<p style='color: red;'>Asignatura eliminada</p>";
 
     header("location: vista_asig.php");

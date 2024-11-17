@@ -89,7 +89,7 @@ function leer($columnas, $tabla, $filtro=null, $valor=null){
 /**
  * ACTUALIZA UN REGISTRO
  */
-function actualizar($tabla, $columnas, $valores, $ID){
+function actualizar($tabla, $columnas, $valores, $filtro, $valor){
     global $conn;
     $colsAux = [];
 
@@ -99,15 +99,25 @@ function actualizar($tabla, $columnas, $valores, $ID){
 
     $strColum = implode(",", $colsAux);
 
+    $strFiltro = "";
+    for ($i=0; $i < count($filtro); $i++) { 
+        $strFiltro .= $filtro[$i] . "= :" . $filtro[$i];
+        if ($i!=count($filtro)-1) {
+            $strFiltro .= " and ";
+        }
+    }
+
     try {
-        $sql = "UPDATE $tabla SET $strColum WHERE ID = :ID";
+        $sql = "UPDATE $tabla SET $strColum WHERE $strFiltro";
         $sql = $conn->prepare($sql);
 
         for ($i=0; $i < count($valores); $i++) {
             $sql->bindParam(":".$columnas[$i], $valores[$i]);
         }
 
-        $sql->bindParam(":ID", $ID);
+        for ($i=0; $i < count($filtro); $i++) { 
+            $sql->bindParam(":".$filtro[$i], $valor[$i]);
+        }
 
         $sql->execute();
 
@@ -121,32 +131,23 @@ function actualizar($tabla, $columnas, $valores, $ID){
 /**
  *  ELIMIMA UN REGISTRO
  */
-function borrar($tabla, $ID, $columnas=null){
+function borrar($tabla, $columnas, $valores){
     global $conn; 
 
-    if ($columnas!=null) {
-        $str = "";
-        for ($i=0; $i < count($columnas); $i++) { 
-            $str .= $columnas[$i] . "= :" . $i;
-            if ($i!=count($ID)-1) {
-                $str .= " and ";
-            }
+    $str = "";
+    for ($i=0; $i < count($columnas); $i++) { 
+        $str .= $columnas[$i] . "= :" . $columnas[$i];
+        if ($i!=count($columnas)-1) {
+            $str .= " and ";
         }
     }
 
     try {
-        if ($columnas==null) {
-            $sql = "DELETE FROM $tabla WHERE ID = :ID";
-            $sql = $conn->prepare($sql);
-            $sql->bindParam(":ID", $ID[0]);
-            
-        }else{
-            $sql = "DELETE FROM $tabla WHERE $str";
-            $sql = $conn->prepare($sql);
+        $sql = "DELETE FROM $tabla WHERE $str";
+        $sql = $conn->prepare($sql);
 
-            for ($i=0; $i < count($ID); $i++) { 
-                $sql->bindParam(":".$i, $ID[$i]);
-            }     
+        for ($i=0; $i < count($columnas); $i++) { 
+            $sql->bindParam(":".$columnas[$i], $valores[$i]);
         }
 
         $sql->execute();
@@ -177,6 +178,27 @@ function buscarAsig($ID){
 
     } catch (PDOException $th) {
         var_dump("Read ERROR en buscarAsig(): " . $th->getMessage());
+        die();
+    }
+}
+
+
+function buscarNota($ID_act, $ID_alumn){
+    global $conn; 
+
+    try {
+        $sql = "SELECT nota FROM notas WHERE ID_act = :ID_act and ID_alumn = :ID_alumn";
+        $sql = $conn->prepare($sql);
+        $sql->bindParam(":ID_act", $ID_act);
+        $sql->bindParam(":ID_alumn", $ID_alumn);
+        $sql->execute();
+
+        $datos = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+        return $datos;
+
+    } catch (PDOException $th) {
+        var_dump("Read ERROR en buscarNota(): " . $th->getMessage());
         die();
     }
 }
