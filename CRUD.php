@@ -183,6 +183,9 @@ function buscarAsig($ID){
 }
 
 
+/**
+ * 
+ */
 function buscarNota($ID_act, $ID_alumn){
     global $conn; 
 
@@ -199,6 +202,39 @@ function buscarNota($ID_act, $ID_alumn){
 
     } catch (PDOException $th) {
         var_dump("Read ERROR en buscarNota(): " . $th->getMessage());
+        die();
+    }
+}
+
+
+/**
+ * 
+ */
+function buscarNota_finales($ID_alumn, $ID_asig){
+    global $conn;
+    $notas_unidad = [];
+
+    try {
+
+        // Todas las unidades de una asignatura
+        $unidades = "SELECT ID FROM unidades where ID_asig = :ID_asig";
+        $unidades = $conn->prepare($unidades);
+        $unidades->bindParam(":ID_asig", $ID_asig);
+        $unidades->execute();
+        $unidades = $unidades->fetchAll(PDO::FETCH_ASSOC);
+
+        // Todas las actividades de una unidad
+        for ($i=0; $i < count($unidades); $i++) { 
+            $uni = $unidades[$i]["ID"];
+
+            // Todas las notas de un alumno en una unidad
+            // SELECT nota FROM notas WHERE ID_alumn = :ID_alumn AND ID_act IN ( SELECT id FROM actividades WHERE ID_unid = $uni);
+        }
+
+        // return $datos;
+
+    } catch (PDOException $th) {
+        var_dump("Read ERROR en buscarNota_finales(): " . $th->getMessage());
         die();
     }
 }

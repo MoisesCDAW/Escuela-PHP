@@ -304,6 +304,12 @@ function gestorAlumn(){
             case 'actua-asig-alumn':
                 actualizaCheck($ID);
                 break;
+
+            case 'notas-alumn':
+                $_SESSION["ID_alumn"] = $ID;
+                header("location: vista_notas_alumno.php");
+                die();
+                break;
         }
     }
 }
