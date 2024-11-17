@@ -19,7 +19,7 @@
 </head>
 <body>
 
-    <p>CREAR ACTIVIDAD - <?php echo "Unidad Nº " . UNIDAD?></p>
+    <p>CREAR ACTIVIDAD - <?php echo "Código Asig.: " . ASIG . " -> Unidad Nº " . UNIDAD?></p>
     <form action="logica_act.php" method="post">
         <input type="number" placeholder="Número de Actividad" name="numero">
         <input type="text" placeholder="Nombre de la Actividad" name="nombre" style='width:250px;'>

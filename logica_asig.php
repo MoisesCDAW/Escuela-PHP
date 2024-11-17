@@ -19,6 +19,8 @@ function panelAsig(){
                 <td>
                     <button name='gestion' value='editar-asig, $ID'>Editar</button>
                     <button name='gestion' value='borrar-asig, $ID' onclick='return confirm(\"Confirmar borrado\")'>Borrar</button>
+                    <span>&nbsp; | &nbsp;</span>
+                    <button name='gestion' value='unid-asig, $ID'>Unidades</button>
                 </td>
             </tr>
             ";
@@ -161,6 +163,12 @@ function gestorAsig(){
             
             case 'borrar-asig':
                 borrarAsig($ID);
+                break;
+            
+            case 'unid-asig':
+                $_SESSION["id_asig"] = $ID;
+                header("location: vista_unid.php");
+                die();
                 break;
         }
     }

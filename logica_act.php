@@ -7,7 +7,7 @@ include "CRUD.php";
 function pintaRadio($unid=null){
     $unidsEdicion = [];
 
-    $datos = leer(["*"], "unidades");
+    $datos = leer(["*"], "unidades", "ID_asig", ID_ASIG);
 
     if ($datos==[]) {
         echo "<br>Sin registros";
@@ -80,13 +80,8 @@ function crearAct(){
         if ($_POST["nombre"]!="") {
             $nombre = $_POST["nombre"];
 
-            if ($_POST["unid-act"]!="") {
-                $unid = $_POST["unid-act"];
-
-                crear("actividades",["ID_unid", "numero","nombre"],[$unid, $numero, $nombre]);
-
-                $valido = 1;
-            }
+            crear("actividades",["ID_unid", "numero","nombre"],[ID_UNIDAD, $numero, $nombre]);
+            $valido = 1;
         }
     }
 
@@ -241,9 +236,13 @@ function gestorAct(){
     if (isset($_SESSION["id_unid"])) {
         $id_unid = $_SESSION["id_unid"];
         $numero_unid = leer(["numero"], "unidades", "ID", $id_unid);
+        $id_asig = leer(["ID_asig"], "unidades", "ID", $id_unid);
+        $cod_asig = leer(["abreviatura"], "asignaturas", "ID", $id_asig[0]["ID_asig"]);
 
         define("ID_UNIDAD", $id_unid);
         define("UNIDAD", $numero_unid[0]["numero"]);
+        define("ID_ASIG", $id_asig[0]["ID_asig"]);
+        define("ASIG", $cod_asig[0]["abreviatura"]);
     }
 
 

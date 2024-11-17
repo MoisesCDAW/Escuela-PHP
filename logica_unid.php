@@ -2,29 +2,10 @@
 include "CRUD.php";
 
 /**
- * Crea los radio de cada asignatura
- */
-function pintaRadio(){
-
-    $datos = leer(["*"], "asignaturas");
-    if ($datos==[]) {
-        echo "<br>Sin registros";
-    }else{
-        for ($i=0; $i<count($datos);$i++) {
-            $ID_asig = $datos[$i]["ID"];
-            $abrev = $datos[$i]["abreviatura"];
-
-            echo "<input type='radio' name='asig-unid' value=$ID_asig> ".$abrev;      
-        }
-    }
-}
-
-
-/**
  * Crea el panel de gestión en la página de vista_asig.php
  */
 function panelUnid(){
-    $datos = leer(["*"], "unidades");
+    $datos = leer(["*"], "unidades", "ID_asig", ID_ASIG);
 
     if ($datos!=[]) {
         for ($i=0; $i<count($datos);$i++) {
@@ -64,13 +45,8 @@ function crearUnidad(){
         if ($_POST["nombre"]!="") {
             $nombre = $_POST["nombre"];
 
-            if ($_POST["asig-unid"]!="") {
-                $asig = $_POST["asig-unid"];
-
-                crear("unidades",["numero","ID_asig","nombre"],[$abreviatura, $asig, $nombre]);
-
-                $valido = 1;
-            }
+            crear("unidades",["numero","ID_asig","nombre"],[$abreviatura, ID_ASIG, $nombre]);
+            $valido = 1;
         }
     }
 
@@ -169,6 +145,15 @@ function borrarUnid($ID){
  * GESTIONA ACCIONES
  */
 function gestorUnid(){
+
+    if (isset($_SESSION["id_unid"])) {
+        $id_asig = $_SESSION["id_asig"];
+        $asig = leer(["abreviatura"], "asignaturas", "ID", $id_asig);
+
+        define("ID_ASIG", $id_asig);
+        define("ASIG", $asig[0]["abreviatura"]);
+    }
+
 
     if (isset($_POST["gestion"])) {
         $gestion = $_POST["gestion"];
