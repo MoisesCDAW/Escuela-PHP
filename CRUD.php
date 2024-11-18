@@ -212,7 +212,7 @@ function buscarNota($ID_act, $ID_alumn){
  */
 function buscarNota_finales($ID_alumn, $ID_asig){
     global $conn;
-    $notas_unidad = [];
+    $notas_unidad = 0;
 
     try {
 
@@ -228,10 +228,23 @@ function buscarNota_finales($ID_alumn, $ID_asig){
             $uni = $unidades[$i]["ID"];
 
             // Todas las notas de un alumno en una unidad
-            // SELECT nota FROM notas WHERE ID_alumn = :ID_alumn AND ID_act IN ( SELECT id FROM actividades WHERE ID_unid = $uni);
+            $notas = "SELECT nota FROM notas WHERE ID_alumn = :ID_alumn AND ID_act IN ( SELECT id FROM actividades WHERE ID_unid = $uni)";
+            $notas = $conn->prepare($notas);
+            $notas->bindParam(":ID_alumn", $ID_alumn);
+            $notas->execute();
+            $notas = $notas->fetchAll(PDO::FETCH_ASSOC);
+            
+            $aux = 0;
+            for ($j=0; $j < count($notas); $j++) { 
+                $aux += $notas[$j]["nota"];
+            }
+
+            $notas_unidad += round($aux/count($notas));
         }
 
-        // return $datos;
+        $notas_unidad = round($notas_unidad/count($unidades));
+
+        return $notas_unidad;
 
     } catch (PDOException $th) {
         var_dump("Read ERROR en buscarNota_finales(): " . $th->getMessage());

@@ -29,47 +29,16 @@
             <th>Asignatura</th>
             <th>Nota</th>
         </tr>
-        <!-- <tr>
-            <td>DSW</td>
-            <td>10</td>
-        </tr>
-        <tr>
-            <td>DEW</td>
-            <td>10</td>
-        </tr> -->
+        <?php 
+            $final = general();
+        ?>
     </table>
     <br>
     <hr>
     <p>
-        Nota Final del curso: 
+        Nota Final del curso: <?php echo $final?>
     </p>
     <br>
-    <!-- <hr>
-    <p>Por asignatura</p>
-    <select>
-        <option>DSW</option>
-        <option>DEW</option>
-    </select>
-    <br>
-    <br>
-    <table class="panel2">
-        <tr>
-            <th>Nº Unidad</th>
-            <th>Unidad</th>
-            <th>Nota</th>
-        </tr>
-        <tr>
-            <td>1</td>
-            <td>Introducción</td>
-            <td>10</td>
-        </tr>
-        <tr>
-            <td>2</td>
-            <td>CRUD</td>
-            <td>10</td>
-        </tr>
-    </table> -->
-
 
     <br>
     <br>

@@ -146,7 +146,7 @@ function borrarUnid($ID){
  */
 function gestorUnid(){
 
-    if (isset($_SESSION["id_unid"])) {
+    if (isset($_SESSION["id_asig"])) {
         $id_asig = $_SESSION["id_asig"];
         $asig = leer(["abreviatura"], "asignaturas", "ID", $id_asig);
 

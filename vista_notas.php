@@ -47,5 +47,17 @@
     <form action="vista_act.php" method="post">
         <button name="opcion" value="volver">Volver</button>
     </form>
+
+    <br>
+    <br>
+    <form action="alumn_vista.php" method="post">
+        <button name="opcion" value="alumnos">Alumnos</button>
+    </form>
+
+    <br>
+    <br>
+    <form action="vista_asig.php" method="post">
+        <button name="opcion" value="asig">Asignaturas</button>
+    </form>
 </body>
 </html>

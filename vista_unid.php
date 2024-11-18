@@ -11,7 +11,7 @@
 
     <style>
         .panel {
-            width: 650px;
+            width: 850px;
             text-align: center;
         }
     </style>
