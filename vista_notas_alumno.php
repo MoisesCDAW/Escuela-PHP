@@ -30,15 +30,43 @@
             <th>Nota</th>
         </tr>
         <?php 
-            $final = general();
+            general();
         ?>
     </table>
     <br>
     <hr>
-    <p>
-        Nota Final del curso: <?php echo $final?>
-    </p>
+
+    <p>Por asignatura</p>
+    <form action="logica_notas_alumno.php" method="post">
+        <select name="asig">
+            <?php pintaAsigs()?>
+        </select>
+        <button name="mostrar" value="notas">Mostrar</button>
+    </form>
+
     <br>
+    <br>
+
+    <table class="panel">
+        <tr>
+            <th>Unidad</th>
+            <th>Nota</th>
+        </tr>
+        <?php 
+            if (isset($_SESSION["notas"])) {
+                $notas = $_SESSION["notas"];
+                foreach ($notas as $key => $value) {
+                    echo "
+                        <tr>
+                            <td>$key</td>
+                            <td>$value</td>
+                        </tr>
+                    ";
+                }
+                unset($_SESSION["notas"]);
+            } 
+        ?>
+    </table>
 
     <br>
     <br>
