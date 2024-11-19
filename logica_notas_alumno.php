@@ -17,8 +17,13 @@ function general(){
         for ($i=0; $i < count($ID_asignaturas); $i++) { 
             $aux = leer(["abreviatura", "ID"], "asignaturas", "ID", $ID_asignaturas[$i]["ID_asig"]);
             $aux2 = buscarNota_finales(ID_ALUMN, $aux[0]["ID"]);
-            $datos = $datos + [$aux[0]["abreviatura"] => $aux2[0]];
-            array_push($asignatuas, $aux[0]["abreviatura"]);
+
+            if ($aux2 != 0) { 
+                $datos = $datos + [$aux[0]["abreviatura"] => $aux2[0]];
+                array_push($asignatuas, $aux[0]["abreviatura"]);
+            }else{
+                $datos = $datos + [$aux[0]["abreviatura"] => "Sin notas"];
+            }
         }
     
         foreach ($datos as $key => $value) {
@@ -28,8 +33,6 @@ function general(){
                     <td>$value</td>
                 </tr>
             ";
-
-            $final += $value;
         }
 
         define("ASIGS", $asignatuas);

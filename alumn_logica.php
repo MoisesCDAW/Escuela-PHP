@@ -139,6 +139,7 @@ function actualizaCheck($ID){
             continue;
         }
         borrar("cursantes", ["ID_alumn", "ID_asig"], [$ID, $value["ID_asig"]]);
+        borrarNotas($ID, $value["ID_asig"]);
     }
 
     foreach ($newChecks as $value) {

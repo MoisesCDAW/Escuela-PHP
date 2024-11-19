@@ -231,26 +231,58 @@ function buscarNota_finales($ID_alumn, $ID_asig){
 
             // Todas las notas de un alumno en una unidad
             $notas = "SELECT nota FROM notas WHERE ID_alumn = :ID_alumn AND ID_act IN ( SELECT id FROM actividades WHERE ID_unid = $uni)";
+
             $notas = $conn->prepare($notas);
             $notas->bindParam(":ID_alumn", $ID_alumn);
             $notas->execute();
             $notas = $notas->fetchAll(PDO::FETCH_ASSOC);
-            
-            $aux = 0;
-            for ($j=0; $j < count($notas); $j++) { 
-                $aux += $notas[$j]["nota"];
-            }
 
-            $notas_unidad += round($aux/count($notas));
-            $notas_unidades = $notas_unidades + [$unidades[$i]["numero"] => round($aux/count($notas))];
+            if ($notas!=[]) {
+                $aux = 0;
+                for ($j=0; $j < count($notas); $j++) { 
+                    $aux += $notas[$j]["nota"];
+                }
+    
+                $notas_unidad += round($aux/count($notas));
+                $notas_unidades = $notas_unidades + [$unidades[$i]["numero"] => round($aux/count($notas))];
+            }
+        
         }
 
-        $nota_asig = round($notas_unidad/count($unidades));
+        if ($notas_unidad!=0) {
+            $nota_asig = round($notas_unidad/count($unidades));
 
-        return [$nota_asig, $notas_unidades];
+            return [$nota_asig, $notas_unidades];
+        }else {
+            return 0;
+        }
+
 
     } catch (PDOException $th) {
         var_dump("Read ERROR en buscarNota_finales(): " . $th->getMessage());
+        die();
+    }
+}
+
+
+/**
+ * 
+ */
+function borrarNotas($ID_alumn, $ID_asig){
+    global $conn; 
+
+    try {
+        $sql = "DELETE FROM notas WHERE ID_alumn = :ID_alumn AND ID_act IN (
+        SELECT actividades.ID FROM actividades JOIN unidades ON actividades.ID_unid = unidades.ID
+        JOIN asignaturas ON unidades.ID_asig = :ID_asig)";
+
+        $sql = $conn->prepare($sql);
+        $sql->bindParam(":ID_alumn", $ID_alumn);
+        $sql->bindParam(":ID_asig", $ID_asig);
+        $sql->execute();
+
+    } catch (PDOException $th) {
+        var_dump("Delete ERROR en borrarNotas(): " . $th->getMessage());
         die();
     }
 }
