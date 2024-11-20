@@ -274,7 +274,7 @@ function borrarNotas($ID_alumn, $ID_asig){
     try {
         $sql = "DELETE FROM notas WHERE ID_alumn = :ID_alumn AND ID_act IN (
         SELECT actividades.ID FROM actividades JOIN unidades ON actividades.ID_unid = unidades.ID
-        JOIN asignaturas ON unidades.ID_asig = :ID_asig)";
+        JOIN asignaturas ON unidades.ID_asig = asignaturas.ID  WHERE asignaturas.ID = :ID_asig)";
 
         $sql = $conn->prepare($sql);
         $sql->bindParam(":ID_alumn", $ID_alumn);

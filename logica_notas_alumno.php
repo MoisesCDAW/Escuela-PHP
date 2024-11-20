@@ -12,7 +12,6 @@ function general(){
 
         $ID_asignaturas = leer(["ID_asig"], "cursantes", "ID_alumn", ID_ALUMN);
         $datos = [];
-        $final = 0;
     
         for ($i=0; $i < count($ID_asignaturas); $i++) { 
             $aux = leer(["abreviatura", "ID"], "asignaturas", "ID", $ID_asignaturas[$i]["ID_asig"]);
@@ -23,6 +22,7 @@ function general(){
                 array_push($asignatuas, $aux[0]["abreviatura"]);
             }else{
                 $datos = $datos + [$aux[0]["abreviatura"] => "Sin notas"];
+                array_push($asignatuas, $aux[0]["abreviatura"]);
             }
         }
     
@@ -40,9 +40,21 @@ function general(){
 }
 
 
-function pintaAsigs(){
+function pintaAsigs(){ 
+    $selected = "";
+
+    if (isset($_SESSION["asig"])) {
+        $selected = $_SESSION["asig"];
+        unset($_SESSION["asig"]);
+    }
+
     foreach (ASIGS as $value) {
-        echo "<option>$value</option>";
+        if ($value==$selected) {
+            echo "<option selected>$value</option>";
+        }else{
+            echo "<option>$value</option>";
+        }
+        
     }
 }
 
@@ -51,13 +63,20 @@ function mostrar(){
     if (isset($_POST["mostrar"])) {
         if (isset($_POST["asig"])) {
             $asig = $_POST["asig"];
+            
             $ID_asig = leer(["ID"], "asignaturas", "abreviatura", $asig);
             $ID_alumno = $_SESSION["ID_alumn"];
 
             $notas_unid_asigs = buscarNota_finales($ID_alumno, $ID_asig[0]["ID"]);
-            $notas_unid_asigs = $notas_unid_asigs[1];
+
+            if ($notas_unid_asigs==0) {
+                $notas_unid_asigs = [""=>"Sin notas"];
+            }else {
+                $notas_unid_asigs = $notas_unid_asigs[1];
+            }
 
             $_SESSION["notas"] = $notas_unid_asigs;
+            $_SESSION["asig"] = $asig;
         }
 
         header("location: vista_notas_alumno.php");

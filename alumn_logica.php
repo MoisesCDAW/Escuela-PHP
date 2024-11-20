@@ -130,16 +130,16 @@ function actualizaCheck($ID){
         $newChecks = [];
     }
 
-    $datosCursante = leer(["ID_asig"], "cursantes", "ID_alumn", $ID);
+    $datosCursante = leer(["ID_asig"], "cursantes", "ID_alumn", $ID);    
 
     foreach ($datosCursante as $value) {
         $aux = array_search($value["ID_asig"], $newChecks);
-        if ($aux!=false) {
+        if ($aux===false) {
+            borrar("cursantes", ["ID_alumn", "ID_asig"], [$ID, $value["ID_asig"]]);
+            borrarNotas($ID, $value["ID_asig"]);
+        }else {
             unset($newChecks[$aux]);
-            continue;
         }
-        borrar("cursantes", ["ID_alumn", "ID_asig"], [$ID, $value["ID_asig"]]);
-        borrarNotas($ID, $value["ID_asig"]);
     }
 
     foreach ($newChecks as $value) {
