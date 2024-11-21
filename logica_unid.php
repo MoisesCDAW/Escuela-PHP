@@ -1,5 +1,6 @@
 <?php 
 include "CRUD.php";
+include "validaciones.php";
 
 /**
  * Crea el panel de gestión en la página de vista_asig.php

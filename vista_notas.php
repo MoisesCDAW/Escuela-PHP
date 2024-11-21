@@ -42,15 +42,6 @@
     </form>
     <hr>
 
-    <!-- PENDIENTE -->
-    <br>
-    <br>
-    <form action="vista_act.php" method="post">
-        <button name="opcion" value="volver" onclick="return confirm('Confirmar borrado')">Borrar Todo</button>
-        <button name="opcion" value="volver" onclick="return confirm('Confirmar Guardado')">Guardar Todo</button>
-        <button name="opcion" value="volver">Editar Todo</button>
-    </form>
-
     <br>
     <br>
     <form action="vista_act.php" method="post">

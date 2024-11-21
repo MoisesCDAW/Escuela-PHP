@@ -1,8 +1,11 @@
 <?php 
 include "CRUD.php";
+include "validaciones.php";
 
 
-
+/**
+ * Pinta las notas finales de todas las asignaturas de las que está matriculado el alumno
+ */
 function general(){
     $asignatuas = [];
 
@@ -40,6 +43,9 @@ function general(){
 }
 
 
+/**
+ * Pinta las notas de la asignatura que se pasó por el form: "Por asignatura"
+ */
 function pintaAsigs(){ 
     $selected = "";
 
@@ -59,6 +65,9 @@ function pintaAsigs(){
 }
 
 
+/**
+ * Gestiona la acción de mostrar las notas de una cierta asignatura que viene del form: "Por asignatura"
+ */
 function mostrar(){
     if (isset($_POST["mostrar"])) {
         if (isset($_POST["asig"])) {

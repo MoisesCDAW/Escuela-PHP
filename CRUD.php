@@ -184,7 +184,7 @@ function buscarAsig($ID){
 
 
 /**
- * 
+ * Busca la nota de un alumno en una cierta actividad
  */
 function buscarNota($ID_act, $ID_alumn){
     global $conn; 
@@ -208,7 +208,8 @@ function buscarNota($ID_act, $ID_alumn){
 
 
 /**
- * 
+ * Devuelve un array con dos arrays, el primero con la nota final de una cierta asignatura
+ * y otro con las notas finales de cada unidad de una cierta asignatura
  */
 function buscarNota_finales($ID_alumn, $ID_asig){
     global $conn;
@@ -266,7 +267,7 @@ function buscarNota_finales($ID_alumn, $ID_asig){
 
 
 /**
- * 
+ * Utilizada para borrar las notas de una asignatura de un cierto alumno cuando este se desmatricula
  */
 function borrarNotas($ID_alumn, $ID_asig){
     global $conn; 

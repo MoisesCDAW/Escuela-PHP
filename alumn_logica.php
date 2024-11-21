@@ -1,5 +1,6 @@
 <?php 
 include "CRUD.php";
+include "validaciones.php";
 
 /**
  * Crea los checkbox de cada asignatura
@@ -84,34 +85,43 @@ function panelAlumn(){
  * Valida los datos de entrada y crea alumnos
  */
 function crearAlumn(){
-    $valido = 0;
+    $valido = 1;
+    $dni = $nombre = $apell = $asig = "";
+    $mensajes = [];
 
-    if ($_POST["dni-alumn"]!=""){
-        $dni = $_POST["dni-alumn"];
-        if ($_POST["nombre-alumn"]!=""){
-            $nombre = $_POST["nombre-alumn"];
-            if ($_POST["apell-alumn"]!=""){
-                $apell = $_POST["apell-alumn"];
-                $asig = $_POST["asig-alumn"];
-                    
-                crear("alumnos", ["dni","nombre","apellidos"], [$dni, $nombre, $apell]);
-                $id = leer(["ID"],"alumnos", "dni", $dni);
+    if ($_SERVER["REQUEST_METHOD"]=="POST") {
+        $dni = validarDNI(strtoupper(validarDato($_POST["dni-alumn"])));
+        if (!$dni) {
+            array_push($mensajes, "<p>DNI inválido. Debe tener 8 dígitos seguidos de una letra válida y no estar vacío</p>");
+            $valido = 0;
+        }
 
-                foreach ($asig as $value) {
-                    crear("cursantes", ["ID_alumn", "ID_asig"], [$id[0]["ID"], $value]);
-                }
+        $nombre = validarNomApell(validarDato($_POST["nombre-alumn"]));
+        if (!$nombre) {
+            array_push($mensajes, "<p>Nombre inválido. Solo letras, Max: 30 caracteres y no puede estar vacío.</p>");
+            $valido = 0;
+        }
 
-                $valido = 1;
-            }
-        } 
+        $apell = validarNomApell(validarDato($_POST["apell-alumn"]));
+        if (!$apell) {
+            array_push($mensajes, "<p>Apellidos inválido. Solo letras, Max: 30 caracteres y no puede estar vacío.</p>");
+            $valido = 0;
+        }
+
+        $asig = $_POST["asig-alumn"]; // Se puede crear un alumno sin asignatura
     }
 
-    if (!$valido) {
-        $_SESSION["mensaje"] = "<p>No pueden haber campos vacíos</p>";
-    }else {
-        $_SESSION["mensaje"] = "<p style='color: green;'> ¡Alumn@ cread@!</p>";
+    if ($valido) {
+        array_push($mensajes, "<p style='color: green;'> ¡Alumn@ cread@!</p>");
+        crear("alumnos", ["dni","nombre","apellidos"], [$dni, $nombre, $apell]);
+        $id = leer(["ID"],"alumnos", "dni", $dni);
+
+        foreach ($asig as $value) {
+            crear("cursantes", ["ID_alumn", "ID_asig"], [$id[0]["ID"], $value]);
+        }
     }
-    
+
+    $_SESSION["mensaje"] = $mensajes;
     header("location: alumn_vista.php");
     die();
 }

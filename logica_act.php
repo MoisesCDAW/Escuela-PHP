@@ -1,5 +1,6 @@
 <?php 
 include "CRUD.php";
+include "validaciones.php";
 
 /**
  * Crea los radio de cada asignatura

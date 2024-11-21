@@ -21,8 +21,8 @@
     <p>CREAR ALUMNO</p>
     <form action="alumn_logica.php" method="post">
         <input type="text" placeholder="DNI del alumno" name="dni-alumn">
-        <input type="text" placeholder="Nombre del alumno" name="nombre-alumn">
-        <input type="text" placeholder="Apellidos del alumno" name="apell-alumn">
+        <input type="text" placeholder="Nombre del alumno" name="nombre-alumn" capitalize>
+        <input type="text" placeholder="Apellidos del alumno" name="apell-alumn" capitalize>
         <br>
         <p>Selecciona las asignaturas a las que pertenecerá:</p>
         <?php 
@@ -35,7 +35,11 @@
         <br>
         <?php 
             if (isset($_SESSION["mensaje"])) {
-                echo $_SESSION["mensaje"];
+                $mensajes = $_SESSION["mensaje"];
+                foreach ($mensajes as $value) {
+                    echo $value;
+                }
+                
                 unset($_SESSION["mensaje"]);
             }
         ?>
