@@ -23,7 +23,16 @@
 
     <?php 
         if (isset($_SESSION["mensaje"])) {
-            echo $_SESSION["mensaje"];
+            $mensajes = $_SESSION["mensaje"];
+
+            if (!is_array($mensajes)) {
+                $mensajes = [$mensajes];
+            }
+            
+            foreach ($mensajes as $value) {
+                echo $value;
+            }
+            
             unset($_SESSION["mensaje"]);
         }
     ?>

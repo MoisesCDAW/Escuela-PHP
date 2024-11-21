@@ -79,23 +79,23 @@ function panelNotas(){
  * Valida los datos de entrada y crea notas
  */
 function guardarNota($ID_alumn){
-    $valido = 0;
 
     if ($_POST["nota-".$ID_alumn]!=""){
         $nota = $_POST["nota-".$ID_alumn];
 
-        crear("notas",["nota", "ID_act","ID_alumn"],[$nota, ID_ACT, $ID_alumn]);
-        $valido = 1;
-    }
-
-    if (!$valido) {
+        if ($nota<=0 || $nota>10) {
+            $_SESSION["mensaje"] = "<p>Las notas tienen que estar entre 1 y 10</p>";
+        }else {
+            crear("notas",["nota", "ID_act","ID_alumn"],[$nota, ID_ACT, $ID_alumn]);
+            $_SESSION["mensaje"] = "<p style='color: green;'> ¡Nota guardada!</p>";
+        }
+        
+    }else{
         $_SESSION["mensaje"] = "<p>No pueden haber campos vacíos</p>";
-    }else {
-        $_SESSION["mensaje"] = "<p style='color: green;'> ¡Nota guardada!</p>";
     }
 
     header("location: vista_notas.php");
-    die();    
+    die();   
 }
 
 /**
@@ -105,20 +105,20 @@ function guardarNota($ID_alumn){
  * 
  */
 function actualizarNota($ID_alumn){
-    $valido = 0;
 
     if ($_POST["nota-".$ID_alumn]!=""){
         $nota = $_POST["nota-".$ID_alumn];
+        $nota = intval($nota);
 
-        actualizar("notas", ["nota"], [$nota], ["ID_act","ID_alumn"], [ID_ACT, $ID_alumn]);
-        $valido = 1;
-    }
-
-
-    if (!$valido) {
-        $_SESSION["mensaje"] = "<p>No pueden haber campos vacíos</p>";
+        if ($nota<=0 || $nota>10) {
+            $_SESSION["mensaje"] = "<p>Las notas tienen que estar entre 1 y 10</p>";
+        }else {
+            actualizar("notas", ["nota"], [$nota], ["ID_act","ID_alumn"], [ID_ACT, $ID_alumn]);
+            $_SESSION["mensaje"] = "<p style='color: green;'> ¡Nota actualizada!</p>";
+        }
+        
     }else{
-        $_SESSION["mensaje"] = "<p style='color: green;'> ¡Nota actualizada!</p>";
+        $_SESSION["mensaje"] = "<p>No pueden haber campos vacíos</p>";
     }
 
     header("location: vista_notas.php");

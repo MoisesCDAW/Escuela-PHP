@@ -75,25 +75,48 @@ function panelAct(){
  * Valida los datos de entrada y crea asignaturas
  */
 function crearAct(){
-    $valido = 0;
+    $valido = 1;
+    $numero = $nombre = "";
+    $mensajes = [];
 
-    if ($_POST["numero"]!=""){
-        $numero = $_POST["numero"];
+    if ($_SERVER["REQUEST_METHOD"]=="POST") {
+        $numero = validarNumero(validarDato($_POST["numero"]));
 
-        if ($_POST["nombre"]!="") {
-            $nombre = $_POST["nombre"];
+        if (!$numero) {
+            array_push($mensajes, "<p>Número inválido. Números enteros positivos, Max 2 dígitos y no puede estar vacío.</p>");
+            $valido = 0;
+        }else {
+            $existentes = [];
+            foreach (leer(["numero"], "actividades", "id_unid", ID_UNIDAD) as $value) {
+                array_push($existentes, $value["numero"]);
+            }
 
-            crear("actividades",["ID_unid", "numero","nombre"],[ID_UNIDAD, $numero, $nombre]);
-            $valido = 1;
+            if (array_search($numero, $existentes)!==false) {
+                array_push($mensajes, "<p>Número inválido. Ya existe una actividad con ese número</p>");
+                $valido = 0;
+            }
+        }
+
+        $nombre = validarNom(validarDato($_POST["nombre"]));
+
+        if (!$nombre) {
+            array_push($mensajes, "<p>Nombre inválido. Solo letras, min 3 y max 50 caracteres y no puede estar vacío.</p>");
+            $valido = 0;
+        }else {
+            $existente = leer(["nombre"], "actividades", "nombre", $nombre);
+            if ($existente!=[]) {
+                array_push($mensajes, "<p>Nombre inválido. Ya existe ese nombre</p>");
+                $valido = 0;
+            }
         }
     }
 
-    if (!$valido) {
-        $_SESSION["mensaje"] = "<p>No pueden haber campos vacíos</p>";
-    }else {
-        $_SESSION["mensaje"] = "<p style='color: green;'> ¡Actividad creada!</p>";
+    if ($valido) {
+        crear("actividades",["ID_unid", "numero","nombre"],[ID_UNIDAD, $numero, $nombre]);
+        array_push($mensajes, "<p style='color: green;'> ¡Actividad creada!</p>");
     }
 
+    $_SESSION["mensaje"] = $mensajes;
     header("location: vista_act.php");
     die();    
 }
@@ -159,25 +182,47 @@ function actualizarAct($ID){
     $datos = leer(["*"], "actividades", "ID", $ID);
     $numero = $datos[0]["numero"];
     $nombre = $datos[0]["nombre"];
-    $valido = 0;
+    $valido = 1;
+    $mensajes = [];
 
-    if ($_POST["numero"]!="") {
-        $numero = $_POST["numero"];
-        
-        if ($_POST["nombre"]!="") {
-            $nombre = $_POST["nombre"];
-            actualizar("actividades", ["numero", "nombre"], [$numero, $nombre], ["ID"], [$ID]);
-    
-            $valido = 1;
+    if ($_SERVER["REQUEST_METHOD"]=="POST") {
+        $numero = validarNumero(validarDato($_POST["numero"]));
+
+        if (!$numero) {
+            array_push($mensajes, "<p>Número inválido. Números enteros positivos, Max 2 dígitos y no puede estar vacío.</p>");
+            $valido = 0;
+        }else {
+            $existentes = [];
+            foreach (leer(["numero"], "actividades", "id_unid", ID_UNIDAD) as $value) {
+                array_push($existentes, $value["numero"]);
+            }
+
+            if (array_search($numero, $existentes)!==false && $numero!=$datos[0]["numero"]) {
+                array_push($mensajes, "<p>Número inválido. Ya existe una actividad con ese número</p>");
+                $valido = 0;
+            }
         }
-    }  
 
-    if (!$valido) {
-        $_SESSION["mensaje"] = "No pueden haber campos vacíos";
-    }else{
-        $_SESSION["mensaje"] = "<p style='color: green;'> ¡Registro actualizado!</p>";
+        $nombre = validarNom(validarDato($_POST["nombre"]));
+
+        if (!$nombre) {
+            array_push($mensajes, "<p>Nombre inválido. Solo letras, min 3 y max 50 caracteres y no puede estar vacío.</p>");
+            $valido = 0;
+        }else {
+            $existente = leer(["nombre"], "actividades", "nombre", $nombre);
+            if ($existente!=[] && $nombre!=$datos[0]["nombre"]) {
+                array_push($mensajes, "<p>Nombre inválido. Ya existe ese nombre</p>");
+                $valido = 0;
+            }
+        }
     }
 
+    if ($valido) {
+        actualizar("actividades", ["numero", "nombre"], [$numero, $nombre], ["ID"], [$ID]);
+        array_push($mensajes, "<p style='color: green;'> ¡Registro actualizado!</p>");
+    }
+
+    $_SESSION["mensaje"] = $mensajes;  
     editarAct($ID);
     header("location: ediciones.php");
     die();
