@@ -91,9 +91,16 @@ function crearAlumn(){
 
     if ($_SERVER["REQUEST_METHOD"]=="POST") {
         $dni = validarDNI(strtoupper(validarDato($_POST["dni-alumn"])));
+        
         if (!$dni) {
             array_push($mensajes, "<p>DNI inválido. Debe tener 8 dígitos seguidos de una letra válida y no estar vacío</p>");
             $valido = 0;
+        }else {
+            $existente = leer(["dni"], "alumnos", "dni", $dni);
+            if ($existente!=[]) {
+                array_push($mensajes, "<p>DNI inválido. Ya existe un alumno con ese DNI</p>");
+                $valido = 0;
+            }
         }
 
         $nombre = validarNomApell(validarDato($_POST["nombre-alumn"]));
@@ -112,13 +119,14 @@ function crearAlumn(){
     }
 
     if ($valido) {
-        array_push($mensajes, "<p style='color: green;'> ¡Alumn@ cread@!</p>");
         crear("alumnos", ["dni","nombre","apellidos"], [$dni, $nombre, $apell]);
         $id = leer(["ID"],"alumnos", "dni", $dni);
 
         foreach ($asig as $value) {
             crear("cursantes", ["ID_alumn", "ID_asig"], [$id[0]["ID"], $value]);
         }
+
+        array_push($mensajes, "<p style='color: green;'> ¡Alumn@ cread@!</p>");
     }
 
     $_SESSION["mensaje"] = $mensajes;
@@ -204,29 +212,42 @@ function actualizarAlumn($ID){
     $dni = $datos[0]["dni"];
     $nombre = $datos[0]["nombre"];
     $apell = $datos[0]["apellidos"];
-    $valido = 0;
+    $valido = 1;
+    $mensajes = [];
 
-    if ($_POST["dni-alumn"]!="") {
-        $dni = $_POST["dni-alumn"];
-        
-        if ($_POST["nombre-alumn"]!="") {
-            $nombre = $_POST["nombre-alumn"];
 
-            if ($_POST["apell-alumn"]!="") {
-                $apell = $_POST["apell-alumn"];
+    if ($_SERVER["REQUEST_METHOD"]=="POST") {
+        $dni = validarDNI(strtoupper(validarDato($_POST["dni-alumn"])));
 
-                actualizar("alumnos", ["dni", "nombre", "apellidos"], [$dni, $nombre, $apell], ["ID"], [$ID]);
-    
-                $valido = 1;
-    
+        if (!$dni) {
+            array_push($mensajes, "<p>DNI inválido. Debe tener 8 dígitos seguidos de una letra válida y no estar vacío</p>");
+            $valido = 0;
+        }else {
+            $existente = leer(["dni"], "alumnos", "dni", $dni);
+            if ($existente!=[] && $dni!=$datos[0]["dni"]) {
+                array_push($mensajes, "<p>DNI inválido. Ya existe un alumno con ese DNI</p>");
+                $valido = 0;
             }
         }
-    }  
 
-    if (!$valido) {
-        $_SESSION["mensaje"] = "No pueden haber campos vacíos";
-    }else{
+        $nombre = validarNomApell(validarDato($_POST["nombre-alumn"]));
+        if (!$nombre) {
+            array_push($mensajes, "<p>Nombre inválido. Solo letras, Max: 30 caracteres y no puede estar vacío.</p>");
+            $valido = 0;
+        }
+
+        $apell = validarNomApell(validarDato($_POST["apell-alumn"]));
+        if (!$apell) {
+            array_push($mensajes, "<p>Apellidos inválido. Solo letras, Max: 30 caracteres y no puede estar vacío.</p>");
+            $valido = 0;
+        }
+    }
+
+    if ($valido) {
+        actualizar("alumnos", ["dni", "nombre", "apellidos"], [$dni, $nombre, $apell], ["ID"], [$ID]);
         $_SESSION["mensaje"] = "<p style='color: green;'> ¡Registro actualizado!</p>";
+    }else {
+        $_SESSION["mensaje"] = $mensajes;
     }
 
     editarAlumn($ID);
