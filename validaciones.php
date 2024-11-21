@@ -24,7 +24,7 @@ function toCapitalize($string){
 
 
 /**
- * Para validad un DNI
+ * Para validad un DNI de un alumno
  */
 function validarDNI($dni) {
 
@@ -53,11 +53,39 @@ function validarDNI($dni) {
 
 
 /**
- * Valida un nombre. Permite espacios entre nombres
+ * Valida nombre y apellidos del alumno. Permite espacios entre nombres
  */
 function validarNomApell($dato){
     if (!preg_match("/^[a-zA-ZñáéíóúÑÁÉÍÓÚ]{2,14}( [a-zA-Z][a-zA-ZñáéíóúÑÁÉÍÓÚ]{2,14})?$/", $dato)) {
-        $dato = "";
+        return false;
+    }else {
+        $aux = explode(" ", $dato);
+        for ($i=0; $i < count($aux); $i++) { 
+            $aux[$i] = toCapitalize($aux[$i]);
+        }
+        $dato = implode(" ", $aux);
+        return $dato;
+    }
+}
+
+
+/**
+ * Valida la abreviatura de una asignatura
+ */
+function validarAbrevAsig($dato){
+    if (!preg_match("/^[a-zA-Z]{3}$/", $dato)) {
+        return false;
+    }else {
+        return $dato;
+    }
+}
+
+
+/**
+ * Valida la abreviatura de una asignatura
+ */
+function validarNomvAsig($dato){
+    if (!preg_match("/^([a-zA-Z][a-zA-ZñáéíóúÑÁÉÍÓÚ]{3, 50}([\s])?)+$/", $dato)) {
         return false;
     }else {
         $aux = explode(" ", $dato);

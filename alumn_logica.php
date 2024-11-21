@@ -245,11 +245,10 @@ function actualizarAlumn($ID){
 
     if ($valido) {
         actualizar("alumnos", ["dni", "nombre", "apellidos"], [$dni, $nombre, $apell], ["ID"], [$ID]);
-        $_SESSION["mensaje"] = "<p style='color: green;'> ¡Registro actualizado!</p>";
-    }else {
-        $_SESSION["mensaje"] = $mensajes;
+        array_push($mensajes, "<p style='color: green;'> ¡Registro actualizado!</p>");
     }
 
+    $_SESSION["mensaje"] = $mensajes;
     editarAlumn($ID);
     header("location: ediciones.php");
     die();

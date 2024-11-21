@@ -34,26 +34,35 @@ function panelAsig(){
  * Valida los datos de entrada y crea asignaturas
  */
 function crearAsig(){
-    $valido = 0;
+    $valido = 1;
+    $abreviatura = $nombre = "";
+    $mensajes = [];
 
-    if ($_POST["abreviatura"]!=""){
-        $abreviatura = $_POST["abreviatura"];
+    // $_POST["nombre"]
+    if ($_SERVER["REQUEST_METHOD"]=="POST") {
+        $abreviatura = validarAbrevAsig(strtoupper(validarDato($_POST["abreviatura"])));
 
-        if ($_POST["nombre"]!="") {
-            $nombre = $_POST["nombre"];
-
-            crear("asignaturas",["abreviatura","nombre"],[$abreviatura, $nombre]);
-
-            $valido = 1;
+        if (!$abreviatura) {
+            array_push($mensajes, "<p>Abreviatura inválida. Solo letras, 3 caracteres sin acentos y no puede estar vacío.</p>");
+            $valido = 0;
+        }else {
+            $existente = leer(["abreviatura"], "asignaturas", "abreviatura", $abreviatura);
+            if ($existente!=[]) {
+                array_push($mensajes, "<p>Abreviatura inválida. Ya existe esa abreviatura</p>");
+                $valido = 0;
+            }
         }
+
+        //Nombre
     }
 
-    if (!$valido) {
-        $_SESSION["mensaje"] = "<p>No pueden haber campos vacíos</p>";
-    }else {
-        $_SESSION["mensaje"] = "<p style='color: green;'> ¡Asignatura creada!</p>";
+
+    if ($valido) {
+        crear("asignaturas",["abreviatura","nombre"],[$abreviatura, $nombre]);
+        array_push($mensajes, "<p style='color: green;'> ¡Asignatura creada!</p>");
     }
 
+    $_SESSION["mensaje"] = $mensajes;
     header("location: vista_asig.php");
     die();    
 }
