@@ -21,7 +21,7 @@
 
     <p>CREAR UNIDAD - <?php echo "Código Asig.: " . ASIG?></p>
     <form action="logica_unid.php" method="post">
-        <input type="number" placeholder="Número de Unidad" name="numero">
+        <input type="text" placeholder="Número de Unidad" name="numero">
         <input type="text" placeholder="Nombre de la unidad" name="nombre" style='width:250px;'>
         <br>
         <br>
@@ -30,7 +30,16 @@
         <br>
         <?php 
             if (isset($_SESSION["mensaje"])) {
-                echo $_SESSION["mensaje"];
+                $mensajes = $_SESSION["mensaje"];
+
+                if (!is_array($mensajes)) {
+                    $mensajes = [$mensajes];
+                }
+                
+                foreach ($mensajes as $value) {
+                    echo $value;
+                }
+                
                 unset($_SESSION["mensaje"]);
             }
         ?>

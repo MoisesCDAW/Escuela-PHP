@@ -38,7 +38,6 @@ function crearAsig(){
     $abreviatura = $nombre = "";
     $mensajes = [];
 
-    // $_POST["nombre"]
     if ($_SERVER["REQUEST_METHOD"]=="POST") {
         $abreviatura = validarAbrevAsig(strtoupper(validarDato($_POST["abreviatura"])));
 
@@ -53,7 +52,18 @@ function crearAsig(){
             }
         }
 
-        //Nombre
+        $nombre = validarNom(validarDato($_POST["nombre"]));
+
+        if (!$nombre) {
+            array_push($mensajes, "<p>Nombre inválido. Solo letras, min 3 y max 50 caracteres y no puede estar vacío.</p>");
+            $valido = 0;
+        }else {
+            $existente = leer(["nombre"], "asignaturas", "nombre", $nombre);
+            if ($existente!=[]) {
+                array_push($mensajes, "<p>Nombre inválido. Ya existe ese nombre</p>");
+                $valido = 0;
+            }
+        }
     }
 
 

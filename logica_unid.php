@@ -38,25 +38,48 @@ function panelUnid(){
  * Valida los datos de entrada y crea asignaturas
  */
 function crearUnidad(){
-    $valido = 0;
+    $valido = 1;
+    $numero = $nombre = "";
+    $mensajes = [];
 
-    if ($_POST["numero"]!=""){
-        $abreviatura = $_POST["numero"];
+    if ($_SERVER["REQUEST_METHOD"]=="POST") {
+        $numero = validarNumero(validarDato($_POST["numero"]));
 
-        if ($_POST["nombre"]!="") {
-            $nombre = $_POST["nombre"];
+        if (!$numero) {
+            array_push($mensajes, "<p>Número inválido. Números enteros positivos, Max 2 dígitos y no puede estar vacío.</p>");
+            $valido = 0;
+        }else {
+            $existentes = [];
+            foreach (leer(["numero"], "unidades", "id_asig", ID_ASIG) as $value) {
+                array_push($existentes, $value["numero"]);
+            }
 
-            crear("unidades",["numero","ID_asig","nombre"],[$abreviatura, ID_ASIG, $nombre]);
-            $valido = 1;
+            if (array_search($numero, $existentes)!==false) {
+                array_push($mensajes, "<p>Número inválido. Ya existe una unidad con ese número</p>");
+                $valido = 0;
+            }
+        }
+
+        $nombre = validarNom(validarDato($_POST["nombre"]));
+
+        if (!$nombre) {
+            array_push($mensajes, "<p>Nombre inválido. Solo letras, min 3 y max 50 caracteres y no puede estar vacío.</p>");
+            $valido = 0;
+        }else {
+            $existente = leer(["nombre"], "unidades", "nombre", $nombre);
+            if ($existente!=[]) {
+                array_push($mensajes, "<p>Nombre inválido. Ya existe ese nombre</p>");
+                $valido = 0;
+            }
         }
     }
 
-    if (!$valido) {
-        $_SESSION["mensaje"] = "<p>No pueden haber campos vacíos</p>";
-    }else {
-        $_SESSION["mensaje"] = "<p style='color: green;'> ¡Unidad creada!</p>";
+    if ($valido) {
+        crear("unidades",["numero","ID_asig","nombre"],[$numero, ID_ASIG, $nombre]);
+        array_push($mensajes, "<p style='color: green;'> ¡Unidad creada!</p>");
     }
 
+    $_SESSION["mensaje"] = $mensajes;
     header("location: vista_unid.php");
     die();    
 }
@@ -72,25 +95,47 @@ function actualizarUnid($ID){
     $datos = leer(["*"], "unidades", "ID", $ID);
     $numero = $datos[0]["numero"];
     $nombre = $datos[0]["nombre"];
-    $valido = 0;
+    $valido = 1;
+    $mensajes = [];
 
-    if ($_POST["numero"]!="") {
-        $numero = $_POST["numero"];
-        
-        if ($_POST["nombre"]!="") {
-            $nombre = $_POST["nombre"];
-            actualizar("unidades", ["numero", "nombre"], [$numero, $nombre], ["ID"], [$ID]);
-    
-            $valido = 1;
+    if ($_SERVER["REQUEST_METHOD"]=="POST") {
+        $numero = validarNumero(validarDato($_POST["numero"]));
+
+        if (!$numero) {
+            array_push($mensajes, "<p>Número inválido. Números enteros positivos, Max 2 dígitos y no puede estar vacío.</p>");
+            $valido = 0;
+        }else {
+            $existentes = [];
+            foreach (leer(["numero"], "unidades", "id_asig", ID_ASIG) as $value) {
+                array_push($existentes, $value["numero"]);
+            }
+
+            if (array_search($numero, $existentes)!==false && $numero!=$datos[0]["numero"]) {
+                array_push($mensajes, "<p>Número inválido. Ya existe una unidad con ese número</p>");
+                $valido = 0;
+            }
         }
-    }  
 
-    if (!$valido) {
-        $_SESSION["mensaje"] = "No pueden haber campos vacíos";
-    }else{
-        $_SESSION["mensaje"] = "<p style='color: green;'> ¡Registro actualizado!</p>";
+        $nombre = validarNom(validarDato($_POST["nombre"]));
+
+        if (!$nombre) {
+            array_push($mensajes, "<p>Nombre inválido. Solo letras, min 3 y max 50 caracteres y no puede estar vacío.</p>");
+            $valido = 0;
+        }else {
+            $existente = leer(["nombre"], "unidades", "nombre", $nombre);
+            if ($existente!=[] && $nombre!=$datos[0]["nombre"]) {
+                array_push($mensajes, "<p>Nombre inválido. Ya existe ese nombre</p>");
+                $valido = 0;
+            }
+        }
     }
 
+    if ($valido) {
+        actualizar("unidades", ["numero", "nombre"], [$numero, $nombre], ["ID"], [$ID]);
+        array_push($mensajes, "<p style='color: green;'> ¡Registro actualizado!</p>");
+    }
+
+    $_SESSION["mensaje"] = $mensajes;
     editarUnid($ID);
     header("location: ediciones.php");
     die();
@@ -109,7 +154,7 @@ function editarUnid($ID){
     $_SESSION["DOM"] = "
     <p>EDITAR UNIDAD</p>
     <form action='logica_unid.php' method='post'>
-        <input type='number' placeholder='Número de Unidad' name='numero' value=$numero>
+        <input type='text' placeholder='Número de Unidad' name='numero' value=$numero>
         <input type='text' placeholder='Nombre de la unidad' name='nombre' value='$nombre' style='width:250px;'>
         <button name='gestion' value='actua-unid, $ID' onclick='return confirm(\"Confirmar actualización\")'>Guardar</button>
     </form>

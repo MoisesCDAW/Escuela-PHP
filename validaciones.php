@@ -82,10 +82,10 @@ function validarAbrevAsig($dato){
 
 
 /**
- * Valida la abreviatura de una asignatura
+ * Valida el nombre de asignaturas, unidades y actividades
  */
-function validarNomvAsig($dato){
-    if (!preg_match("/^([a-zA-Z][a-zA-ZñáéíóúÑÁÉÍÓÚ]{3, 50}([\s])?)+$/", $dato)) {
+function validarNom($dato){
+    if (!preg_match("/^[a-zA-ZñáéíóúÑÁÉÍÓÚ\s]{3,60}/", $dato)) {
         return false;
     }else {
         $aux = explode(" ", $dato);
@@ -93,6 +93,18 @@ function validarNomvAsig($dato){
             $aux[$i] = toCapitalize($aux[$i]);
         }
         $dato = implode(" ", $aux);
+        return $dato;
+    }
+}
+
+
+/**
+ * Valida número de unidad y de actividad
+ */
+function validarNumero($dato){
+    if (!preg_match("/^[0-9]{1,2}/", $dato)) {
+        return false;
+    }else {
         return $dato;
     }
 }

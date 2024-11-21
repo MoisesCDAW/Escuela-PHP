@@ -8,7 +8,7 @@ USE escuela;
 CREATE TABLE asignaturas (
     ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     abreviatura varchar(5) NOT NULL,
-    nombre varchar(50) NOT NULL
+    nombre varchar(60) NOT NULL
 );
 
 
