@@ -6,7 +6,7 @@ include "validaciones.php";
 /**
  * Ordena las unidades por su número de forma ascendente
  */
-function compareByAge($a, $b) {
+function comparaNum($a, $b) {
     if ($a['numero'] < $b['numero']) {
         return -1;
     } elseif ($a['numero'] > $b['numero']) {
@@ -22,7 +22,7 @@ function compareByAge($a, $b) {
  */
 function panelUnid(){
     $datos = leer(["*"], "unidades", "ID_asig", ID_ASIG);
-    usort($datos, 'compareByAge');
+    usort($datos, 'comparaNum');
 
     if ($datos!=[]) {
         for ($i=0; $i<count($datos);$i++) {
