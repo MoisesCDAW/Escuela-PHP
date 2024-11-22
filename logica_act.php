@@ -2,6 +2,21 @@
 include "CRUD.php";
 include "validaciones.php";
 
+
+/**
+ * Ordena las actividades por su número de forma ascendente
+ */
+function compareByAge($a, $b) {
+    if ($a['numero'] < $b['numero']) {
+        return -1;
+    } elseif ($a['numero'] > $b['numero']) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+
 /**
  * Crea los radio de cada asignatura
  */
@@ -9,6 +24,7 @@ function pintaRadio($unid=null){
     $unidsEdicion = [];
 
     $datos = leer(["*"], "unidades", "ID_asig", ID_ASIG);
+    usort($datos, 'compareByAge');
 
     if ($datos==[]) {
         echo "<br>Sin registros";
@@ -38,6 +54,7 @@ function pintaRadio($unid=null){
  */
 function panelAct(){
     $datos = leer(["*"], "actividades", "ID_unid", ID_UNIDAD);
+    usort($datos, 'compareByAge');
 
     if ($datos!=[]) {
         for ($i=0; $i<count($datos);$i++) {
