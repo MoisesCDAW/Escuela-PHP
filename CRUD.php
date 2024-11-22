@@ -5,8 +5,8 @@ session_start();
  * Crea la conexión con las base de datos
  */
 function conectar(){
-    $user = "moises";
-    $password = "123456";
+    $user = "root";
+    $password = "";
 
     try {
         $conn = new PDO('mysql:host=localhost;dbname=escuela', $user, $password);
